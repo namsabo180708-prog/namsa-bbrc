@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('public site smoke', () => {
   test('home loads with official site name and 7 nav items', async ({ page }) => {
     await page.goto('/')
-    await expect(page.getByRole('banner')).toContainText('대한예수교장로회 사랑하는교회')
+    await expect(page.getByRole('banner')).toContainText('대한예수교장로회 남사보배로운교회')
     await expect(page.getByRole('navigation').getByRole('link', { name: '교회소개' })).toBeVisible()
     await expect(page.getByRole('navigation').getByRole('link', { name: '예배안내' })).toBeVisible()
     await expect(page.getByRole('contentinfo')).toContainText('협력기관')
