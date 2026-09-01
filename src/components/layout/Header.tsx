@@ -92,7 +92,7 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-[4.75rem] sm:px-6">
         <Link to="/" className="flex min-w-0 items-center">
           <img
-            src="/logo-image/logo-full-color.png"
+            src="/logo-image/02-namsa-main-trans-logo-02.png"
             alt={SITE_NAME}
             className={cn(
               'h-10 w-auto transition-[filter] duration-300 sm:h-12',
