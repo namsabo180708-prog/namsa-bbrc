@@ -135,6 +135,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       slogan: String(d.slogan ?? ''),
       mottoLines: Array.isArray(d.mottoLines) ? d.mottoLines.map(String) : [],
       footerText: String(d.footerText ?? ''),
+      foundedYear:
+        d.foundedYear != null && d.foundedYear !== '' && !Number.isNaN(Number(d.foundedYear))
+          ? Number(d.foundedYear)
+          : seedSiteSettings.foundedYear,
       contact: {
         phone: String(d.contact?.phone ?? ''),
         email: String(d.contact?.email ?? ''),

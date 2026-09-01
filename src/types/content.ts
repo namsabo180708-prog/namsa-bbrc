@@ -27,6 +27,8 @@ export interface SiteSettings {
   slogan: string
   mottoLines: string[]
   footerText: string
+  /** 교회 설립 연도 — Topbar 하단 스트립·푸터 저작권 표기에 사용 */
+  foundedYear?: number
   contact: {
     phone: string
     email: string

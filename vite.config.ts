@@ -10,7 +10,12 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/apple-touch-icon.png', 'icons/app-icon.svg'],
+      includeAssets: [
+        'icons/favicon-16.png',
+        'icons/favicon-32.png',
+        'icons/favicon-48.png',
+        'icons/apple-touch-icon.png',
+      ],
       manifest: {
         name: '대한예수교장로회 남사보배로운교회',
         short_name: '남사보배로운교회',
@@ -23,6 +28,8 @@ export default defineConfig({
         background_color: '#eef1ef',
         theme_color: '#3f6f54',
         icons: [
+          { src: '/icons/favicon-32.png', sizes: '32x32', type: 'image/png', purpose: 'any' },
+          { src: '/icons/favicon-48.png', sizes: '48x48', type: 'image/png', purpose: 'any' },
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
           {

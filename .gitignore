@@ -45,6 +45,8 @@ functions/node_modules
 # 이미지라 저장소/Storage에 올리지 않고 로컬에만 보관한다.
 assets-staging/
 prd/
+public/logo-image/
+public/photos/
 
 # impeccable 스킬 QA 산출물(스크린샷 등) — 저장소에 커밋하지 않음
 .impeccable/

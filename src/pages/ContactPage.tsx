@@ -61,6 +61,7 @@ export function ContactPage() {
           <ContactSkeleton />
         ) : (
         <TabbedPage
+          variant="segmented"
           tabs={[
             {
               key: 'directions',

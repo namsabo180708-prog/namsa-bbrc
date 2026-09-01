@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { SITE_NAME } from '../../types/content'
 import { useAdminStore } from '../../store/admin-store'
+import { getSiteSettings } from '../../lib/content-service'
 import { cn, toTelHref } from '../../lib/utils'
 
 /** 푸터 고정 연락처 — prd/남사보배로운교회-info.txt */
@@ -14,6 +16,7 @@ const FOOTER_CONTACT = {
   email: 'namsabo180708@gmail.com',
 } as const
 
+/** Firestore(siteSettings/main)에 값이 없을 때 쓰는 기본 설립 연도 */
 const FOUNDED_YEAR = 2005
 
 /**
@@ -35,6 +38,15 @@ export function Footer() {
   const isAdminMode = useAdminStore((s) => s.isAdminMode)
   const setLoginOpen = useAdminStore((s) => s.setLoginOpen)
 
+  const [foundedYear, setFoundedYear] = useState(FOUNDED_YEAR)
+  useEffect(() => {
+    getSiteSettings()
+      .then((s) => {
+        if (s.foundedYear && s.foundedYear > 0) setFoundedYear(s.foundedYear)
+      })
+      .catch(() => {})
+  }, [])
+
   return (
     <footer className="site-footer mt-auto">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
@@ -43,7 +55,7 @@ export function Footer() {
           <div className="flex min-w-0 flex-col">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-10">
               <img
-                src="/logo-image/03-namsa-main-trans-logo.png"
+                src="/logo-image/webp/03-namsa-main-trans-logo.webp"
                 alt={SITE_NAME}
                 className="h-12 w-auto shrink-0 sm:h-14"
               />
@@ -82,7 +94,7 @@ export function Footer() {
 
             {/* BackToTop default 버튼 바탕(bg-gold)과 동일 톤 */}
             <p className="mt-auto pt-8 text-xs leading-relaxed text-gold sm:pt-10 sm:text-[13px]">
-              © {FOUNDED_YEAR}-{currentYear} {SITE_NAME}. All rights reserved.
+              © {foundedYear}-{currentYear} {SITE_NAME}. All rights reserved.
               <span className="mx-1.5 text-gold/45" aria-hidden>
                 |
               </span>

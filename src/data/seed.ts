@@ -25,6 +25,7 @@ export const seedSiteSettings: SiteSettings = {
     '세상으로 보냄 받는 공동체',
   ],
   footerText: '그리스도의 사랑으로 이웃을 섬기는 교회',
+  foundedYear: 2005,
   contact: {
     phone: '031-322-0191',
     email: 'namsabo180708@gmail.com',

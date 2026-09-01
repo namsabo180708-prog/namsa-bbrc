@@ -23,7 +23,7 @@ export function BackToTop() {
       )}
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
     >
-      <ArrowUp className="h-5 w-5" />
+      <ArrowUp className="h-5 w-5 text-white" />
     </Button>
   )
 }

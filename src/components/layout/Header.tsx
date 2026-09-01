@@ -1,11 +1,22 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { Menu, X, LogOut, Users, Megaphone, FileText } from 'lucide-react'
+import { Menu, X, LogOut, Users, Megaphone, FileText, Pencil } from 'lucide-react'
 import { NAV_ITEMS, SITE_NAME } from '../../types/content'
 import { useAdminStore } from '../../store/admin-store'
+import { getSiteSettings, saveDocument } from '../../lib/content-service'
 import { Button } from '../ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '../ui/dialog'
+import { FormField } from '../ui/form-field'
+import { Input } from '../ui/input'
 import { cn } from '../../lib/utils'
 
+/** Firestore(siteSettings/main)에 값이 없을 때 쓰는 기본 설립 연도 */
 const FOUNDED_YEAR = 2005
 /** 닫힘 애니메이션(mobile-menu-rollup) 길이와 반드시 맞춰야 한다 — index.css 참고 */
 const MENU_CLOSE_ANIMATION_MS = 200
@@ -78,8 +89,23 @@ export function Header() {
   const setPopupManageOpen = useAdminStore((s) => s.setPopupManageOpen)
   const logout = useAdminStore((s) => s.logout)
 
+  const [foundedYear, setFoundedYear] = useState(FOUNDED_YEAR)
+  const [yearEditOpen, setYearEditOpen] = useState(false)
+
+  const loadFoundedYear = useCallback(() => {
+    getSiteSettings()
+      .then((s) => {
+        if (s.foundedYear && s.foundedYear > 0) setFoundedYear(s.foundedYear)
+      })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    loadFoundedYear()
+  }, [loadFoundedYear])
+
   const currentYear = new Date().getFullYear()
-  const anniversary = Math.max(0, currentYear - FOUNDED_YEAR)
+  const anniversary = Math.max(0, currentYear - foundedYear)
 
   return (
     <header
@@ -92,7 +118,7 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-[4.75rem] sm:px-6">
         <Link to="/" className="flex min-w-0 items-center">
           <img
-            src="/logo-image/03-namsa-main-trans-logo.png"
+            src="/logo-image/webp/03-namsa-main-trans-logo.webp"
             alt={SITE_NAME}
             className={cn(
               'h-10 w-auto transition-[filter] duration-300 sm:h-12',
@@ -293,25 +319,122 @@ export function Header() {
 
       <div
         className={cn(
-          'border-t px-4 py-1.5 text-center text-xs tracking-wide transition-colors duration-300 sm:text-[13px]',
+          'border-t px-4 py-1.5 text-center text-[13px] tracking-wide transition-colors duration-300',
           isTransparent
             ? 'border-paper/15 bg-transparent text-paper/80 drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]'
             : 'border-ink-line bg-ink-soft text-ink-muted',
         )}
       >
         {isAdminMode ? (
-          <span>
-            관리자 모드 활성화 · 편집 가능 영역에 연필 아이콘이 표시됩니다
-            {admin ? ` (${admin.role === 'super' ? '최고관리자' : '부관리자'})` : ''}
+          <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+            <span>
+              교회설립 제 <span className="font-semibold text-paper">{anniversary}</span>주년
+              <span className="mx-2 text-ink-line" aria-hidden>·</span>
+              Since {foundedYear} – {currentYear}
+            </span>
+            <button
+              type="button"
+              onClick={() => setYearEditOpen(true)}
+              className="inline-flex items-center gap-1 rounded-sm bg-ink/85 px-2 py-0.5 text-[11px] font-medium text-gold shadow transition-colors hover:bg-ink"
+              aria-label="설립 연도 편집"
+            >
+              <Pencil className="h-3 w-3" />
+              연도 편집
+            </button>
           </span>
         ) : (
           <span>
-            교회설립 제 <span className="text-gold">{anniversary}</span>주년
+            교회설립 제 <span className="font-semibold text-paper">{anniversary}</span>주년
             <span className="mx-2 text-ink-line" aria-hidden>·</span>
-            Since {FOUNDED_YEAR} – {currentYear}
+            Since {foundedYear} – {currentYear}
           </span>
         )}
       </div>
+
+      <FoundedYearDialog
+        open={yearEditOpen}
+        onOpenChange={setYearEditOpen}
+        current={foundedYear}
+        onSaved={(year) => setFoundedYear(year)}
+      />
     </header>
+  )
+}
+
+function FoundedYearDialog({
+  open,
+  onOpenChange,
+  current,
+  onSaved,
+}: {
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  current: number
+  onSaved: (year: number) => void
+}) {
+  const pushToast = useAdminStore((s) => s.pushToast)
+  const [value, setValue] = useState(String(current))
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (open) setValue(String(current))
+  }, [open, current])
+
+  const save = async () => {
+    const year = Number(value.trim())
+    const nowYear = new Date().getFullYear()
+    if (!Number.isInteger(year) || year < 1900 || year > nowYear) {
+      pushToast({
+        title: '연도를 확인해 주세요',
+        description: `1900 ~ ${nowYear} 사이의 연도를 입력하세요.`,
+        variant: 'error',
+      })
+      return
+    }
+    setSaving(true)
+    try {
+      await saveDocument('siteSettings', 'main', { foundedYear: year })
+      onSaved(year)
+      pushToast({ title: '설립 연도 저장됨', description: `Since ${year}`, variant: 'success' })
+      onOpenChange(false)
+    } catch (err) {
+      pushToast({
+        title: '저장 실패',
+        description: err instanceof Error ? err.message : '알 수 없는 오류',
+        variant: 'error',
+      })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-[min(92vw,26rem)]">
+        <DialogHeader>
+          <DialogTitle>교회 설립 연도 편집</DialogTitle>
+          <DialogDescription>
+            저장하면 Topbar 하단 문구와 푸터 저작권 표기의 연도가 함께 바뀝니다.
+          </DialogDescription>
+        </DialogHeader>
+        <FormField label="설립 연도" htmlFor="founded-year" hint="예: 2005">
+          <Input
+            id="founded-year"
+            type="number"
+            inputMode="numeric"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </FormField>
+        <div className="mt-4 flex justify-end gap-2 border-t border-paper-line/60 pt-3">
+          <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
+            취소
+          </Button>
+          <Button size="sm" disabled={saving} onClick={() => void save()}>
+            저장 후 게시
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
