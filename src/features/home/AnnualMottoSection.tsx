@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { AnnualMotto } from '../../types/content'
 import { EditableBlock } from '../../components/shared/EditableBlock'
-import { Reveal } from '../../components/shared/Reveal'
 import { FormField } from '../../components/ui/form-field'
 import { Input } from '../../components/ui/input'
 import { Textarea } from '../../components/ui/textarea'
@@ -14,12 +13,11 @@ interface Props {
   onUpdated?: () => void
 }
 
+/** 홈 표어 스트립 — 타이포 중심, 번호 장식 최소화 */
 export function AnnualMottoSection({ motto, onUpdated }: Props) {
   const pushToast = useAdminStore((s) => s.pushToast)
   const displayYear = motto.year && motto.year > 0 ? motto.year : new Date().getFullYear()
-  const practices = motto.practices.length
-    ? motto.practices
-    : ['', '', '']
+  const practices = motto.practices.length ? motto.practices : ['', '', '']
 
   return (
     <EditableBlock
@@ -37,28 +35,26 @@ export function AnnualMottoSection({ motto, onUpdated }: Props) {
         />
       )}
     >
-      <Reveal className="h-full">
-        <article className="relative flex h-full min-h-[280px] flex-col border-l border-paper-line pl-6 sm:pl-8">
-          <p className="index-num text-xs font-semibold tracking-[0.14em] text-gold-deep">
-            {displayYear}년도 표어
-          </p>
-          <h2 className="mt-3 font-serif text-2xl font-semibold leading-snug text-paper-text sm:text-[1.75rem]">
-            {motto.motto}
-          </h2>
-          <p className="mt-2 text-base font-medium text-paper-muted">{motto.scripture}</p>
+      <article className="mx-auto max-w-3xl text-center">
+        <p className="text-sm text-paper-muted">{displayYear}년 표어</p>
+        <h2 className="mt-4 font-serif text-3xl font-semibold leading-snug tracking-tight text-paper-text sm:text-4xl">
+          {motto.motto}
+        </h2>
+        <p className="mt-3 text-sm text-gold-deep sm:text-base">{motto.scripture}</p>
 
-          <ol className="mt-7 space-y-3.5 border-t border-paper-line pt-6">
-            {practices.slice(0, 3).map((line, i) => (
-              <li key={i} className="flex items-baseline gap-3 text-base leading-relaxed text-paper-text">
-                <span className="index-num shrink-0 font-serif text-xs text-gold-deep">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <span>{line}</span>
+        <ul className="mt-10 space-y-2 text-left sm:mx-auto sm:max-w-md">
+          {practices.slice(0, 3).map((line, i) =>
+            line ? (
+              <li
+                key={i}
+                className="border-t border-paper-line pt-3 text-base leading-relaxed text-paper-text first:border-t-0 first:pt-0"
+              >
+                {line}
               </li>
-            ))}
-          </ol>
-        </article>
-      </Reveal>
+            ) : null,
+          )}
+        </ul>
+      </article>
     </EditableBlock>
   )
 }
@@ -114,11 +110,7 @@ function MottoEditor({
 
   return (
     <div className="space-y-4">
-      <FormField
-        label="표시 연도"
-        htmlFor="motto-year"
-        hint="비우면 현재 연도가 자동 표시됩니다"
-      >
+      <FormField label="표시 연도" htmlFor="motto-year" hint="비우면 현재 연도가 자동 표시됩니다">
         <Input
           id="motto-year"
           type="number"

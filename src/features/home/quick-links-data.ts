@@ -1,7 +1,7 @@
 import { PARTNER_LINKS } from '../../types/content'
 import { seedContact, seedWorship } from '../../data/seed'
 
-/** 홈 「찾아가기」 색인 — 주보 목차처럼 번호 매긴 5개 항목 */
+/** 홈 「찾아가기」 색인 — Stone & Leaf 텍스트 행 */
 export const indexItems = [
   {
     key: 'worship',
@@ -53,27 +53,15 @@ export const partners = [
     label: PARTNER_LINKS[0].label,
     href: PARTNER_LINKS[0].href,
     role: '교단 · 총회',
-    logo: '/logo-image/총회-logo-투명.png',
-    /** 호버 플레이트 — 총회 엠블럼 보라와 맞춘 진한 라일락 파스텔 */
-    hoverPlate: '#c4b5d4',
   },
   {
     label: PARTNER_LINKS[1].label,
     href: PARTNER_LINKS[1].href,
     role: '지역 · 노회',
-    logo: '/logo-image/남경기노회_logo_투명.png',
-    /** 호버 플레이트 — 흑색 로고 대비용 진한 세이지 파스텔 */
-    hoverPlate: '#a8c0a8',
   },
   {
     label: PARTNER_LINKS[2].label,
     href: PARTNER_LINKS[2].href,
     role: '세계 · 선교',
-    logo: '/logo-image/GMS-logo-투명.png',
-    /** 호버 플레이트 — 파란 엠블럼과 구분되는 진한 살구 파스텔 */
-    hoverPlate: '#d4b59a',
   },
 ] as const
-
-/** 기본 스포트라이트: 남경기노회(중앙, index 1) */
-export const DEFAULT_PARTNER_FOCUS = 1

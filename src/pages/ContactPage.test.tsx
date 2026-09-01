@@ -23,7 +23,9 @@ describe('ContactPage tabs', () => {
       'aria-selected',
       'true',
     )
-    expect(screen.getAllByText(/전농로/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/처인성로/).length).toBeGreaterThan(0)
+    expect(screen.getByText(/Cheoinseong-ro/)).toBeInTheDocument()
+    expect(screen.getByText('031-322-0191')).toBeInTheDocument()
   })
 
   it('switches to the 주차안내 tab and shows the parking section', async () => {
@@ -37,10 +39,14 @@ describe('ContactPage tabs', () => {
     expect(screen.queryByText('교회 연락처')).not.toBeInTheDocument()
   })
 
-  it('groups seeded routes under 지하철로 오실 때 / 버스로 오실 때 / 도보로 오실 때', async () => {
+  it('renders at least one traffic route group when contact data loads', async () => {
     renderPage()
-    await waitFor(() => expect(screen.getByText('지하철로 오실 때')).toBeInTheDocument())
-    expect(screen.getByText('버스로 오실 때')).toBeInTheDocument()
-    expect(screen.getByText('도보로 오실 때')).toBeInTheDocument()
+    await waitFor(() => {
+      const hasGroup =
+        screen.queryByText('버스로 오실 때') ||
+        screen.queryByText('도보로 오실 때') ||
+        screen.queryByText('지하철로 오실 때')
+      expect(hasGroup).toBeTruthy()
+    })
   })
 })

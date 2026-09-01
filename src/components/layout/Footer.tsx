@@ -3,13 +3,14 @@ import { SITE_NAME } from '../../types/content'
 import { useAdminStore } from '../../store/admin-store'
 import { cn, toTelHref } from '../../lib/utils'
 
-/** 푸터 고정 연락처 (공식 소재지) */
+/** 푸터 고정 연락처 — prd/남사보배로운교회-info.txt */
 const FOOTER_CONTACT = {
-  postal: '02621',
-  addressKo: '서울특별시 동대문구 전농로 20 (답십리동) 스타클래스 지상1층, 지하1층',
-  addressEn: '1st Floor & B1, STAR CLASS, 20 Jeonnong-ro, Dongdaemun-gu, Seoul',
-  tel: '(02)453-7171',
-  fax: '(02)453-7361',
+  postal: '17115',
+  addressKo: '경기도 용인시 처인구 남사읍 처인성로 896',
+  addressEn: '896 Cheoinseong-ro, Namsa-eup, Cheoin-gu, Yongin-si, Gyeonggi-do 17115',
+  tel: '031-322-0191',
+  fax: '031-322-0199',
+  website: 'https://남사보배로운교회.kr',
   email: 'namsabo180708@gmail.com',
 } as const
 
@@ -42,7 +43,7 @@ export function Footer() {
           <div className="flex min-w-0 flex-col">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-10">
               <img
-                src="/logo-image/02-namsa-main-trans-logo-02.png"
+                src="/logo-image/03-namsa-main-trans-logo.png"
                 alt={SITE_NAME}
                 className="h-12 w-auto shrink-0 sm:h-14"
               />
@@ -64,6 +65,17 @@ export function Footer() {
                     |
                   </span>
                   <span className="font-medium text-paper">Fax</span> : {FOOTER_CONTACT.fax}
+                </p>
+                <p>
+                  <span className="font-medium text-paper">Web</span> :{' '}
+                  <a
+                    href={FOOTER_CONTACT.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline-offset-2 transition-colors duration-200 hover:text-gold hover:underline"
+                  >
+                    {FOOTER_CONTACT.website.replace(/^https?:\/\//, '')}
+                  </a>
                 </p>
               </address>
             </div>
@@ -124,7 +136,7 @@ export function Footer() {
                         <span
                           aria-hidden
                           className={cn(
-                            'pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-center scale-x-0 bg-gold transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-x-100 group-hover:bg-[#84f5a2]',
+                            'pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-center scale-x-0 bg-gold transition-transform duration-300 ease-out group-hover:scale-x-100',
                             isActive && 'scale-x-100',
                           )}
                         />

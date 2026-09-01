@@ -110,18 +110,12 @@ export function HeroSlider({ slides }: HeroSliderProps) {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink from-10% via-ink/55 via-45% to-transparent" />
 
         <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col justify-end px-4 pb-20 pt-28 sm:px-6 sm:pb-24">
-          <span
-            className={cn(
-              'mb-5 flex w-fit items-center gap-2.5 text-xs font-semibold tracking-[0.16em] text-gold',
-              copyClass(),
-            )}
-          >
-            <span aria-hidden className="h-px w-8 bg-gold" />
-            {current.tag}
-          </span>
+          {current.tag ? (
+            <span className={cn('mb-4 text-sm text-gold', copyClass())}>{current.tag}</span>
+          ) : null}
           <h1
             className={cn(
-              'max-w-3xl font-serif text-4xl font-semibold leading-[1.15] text-paper sm:text-6xl',
+              'max-w-3xl font-serif text-4xl font-semibold leading-[1.15] tracking-tight text-paper sm:text-5xl lg:text-6xl',
               copyClass(),
             )}
             style={reducedMotion ? undefined : { transitionDelay: entered ? '80ms' : '0ms' }}

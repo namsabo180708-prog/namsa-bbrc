@@ -35,13 +35,12 @@ export function TabsTrigger({
       {...props}
     >
       {children}
-      {/* 밑줄: 헤더 Topbar 메뉴와 동일한 바운스 애니메이션 — 활성 탭은 골드로 고정, 호버 시 0.5초에
-          걸쳐 살짝 튕기며 #fa8a52로 펼쳐진다 */}
+      {/* 밑줄: 활성/호버 시 leaf accent */}
       <span
         aria-hidden
         className={cn(
-          'pointer-events-none absolute inset-x-0 -bottom-px h-[2px] origin-center scale-x-0 bg-gold transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]',
-          'group-hover:scale-x-100 group-hover:bg-[#fa8a52]',
+          'pointer-events-none absolute inset-x-0 -bottom-px h-[2px] origin-center scale-x-0 bg-gold transition-transform duration-300 ease-out',
+          'group-hover:scale-x-100',
           'group-data-[state=active]:scale-x-100',
         )}
       />

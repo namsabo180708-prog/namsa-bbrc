@@ -1,9 +1,9 @@
 @import 'tailwindcss';
 
 /*
- * "성소의 빛(Sanctuary Light)" — 스테인드글라스·주보 색인·놋쇠 명패에서 끌어온
- * 팔레트. ink(짙은 예배당 어둠)를 중심 서페이스로 쓰고 paper(주보 갱지 톤)는
- * 정독이 필요한 콘텐츠에만, gold/wine은 스테인드글라스 조각처럼 절제해 쓴다.
+ * Stone & Leaf — 쿨 스톤 캔버스 + 틸 블랙 ink + 리프 그린 액센트.
+ * 토큰 이름(gold 등)은 코드 호환을 위해 유지하고 값만 교체한다.
+ * @see prd/Stone-and-Leaf-리디자인-구상서.md
  */
 :root {
   /* Header.tsx가 실측해 갱신한다 — 이 값은 JS 실행 전 첫 페인트용 대략치일 뿐. */
@@ -11,21 +11,21 @@
 }
 
 @theme {
-  --color-ink: #17130f;
-  --color-ink-soft: #221b15;
-  --color-ink-line: #3d3428;
-  --color-ink-muted: #c7bea9;
+  --color-ink: #121816;
+  --color-ink-soft: #1a221e;
+  --color-ink-line: #2a3530;
+  --color-ink-muted: #a8b5ae;
 
-  --color-paper: #f1ede3;
-  --color-paper-dim: #e7e1d2;
-  --color-paper-line: #dad2be;
-  --color-paper-text: #1c1712;
-  --color-paper-muted: #5c5344;
+  --color-paper: #eef1ef;
+  --color-paper-dim: #e4e8e5;
+  --color-paper-line: #cfd6d2;
+  --color-paper-text: #141a17;
+  --color-paper-muted: #5a6660;
 
-  --color-gold: #c89b3c;
-  --color-gold-deep: #93701f;
-  --color-wine: #7c2f3a;
-  --color-wine-deep: #5e2029;
+  --color-gold: #3f6f54;
+  --color-gold-deep: #2a4d3a;
+  --color-wine: #6b3a42;
+  --color-wine-deep: #4e2a31;
 
   --font-serif: 'Noto Serif KR', 'Georgia', serif;
   --font-sans: 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif;
@@ -88,15 +88,14 @@
   }
 }
 
-/* 푸터 배경 강제 — 유틸/캐시와 무관하게 항상 적용.
-   ink-soft(#221b15)로 살짝 밝게 띄워 바로 위 ink 섹션(협력기관 등)과 구분되도록 한다. */
+/* 푸터 배경 강제 — Stone & Leaf ink-soft / ink-line */
 .site-footer {
-  background-color: #221b15 !important;
-  border-top: 1px solid #3d3428 !important;
+  background-color: #1a221e !important;
+  border-top: 1px solid #2a3530 !important;
 }
 
 .site-footer__rule {
-  border-top: 1px solid #3d3428 !important;
+  border-top: 1px solid #2a3530 !important;
 }
 
 /* Radix Tooltip — fade + soft scale (exit animation uses keyframes so Radix waits) */

@@ -92,7 +92,7 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-[4.75rem] sm:px-6">
         <Link to="/" className="flex min-w-0 items-center">
           <img
-            src="/logo-image/02-namsa-main-trans-logo-02.png"
+            src="/logo-image/03-namsa-main-trans-logo.png"
             alt={SITE_NAME}
             className={cn(
               'h-10 w-auto transition-[filter] duration-300 sm:h-12',
@@ -124,7 +124,7 @@ export function Header() {
                   <span
                     aria-hidden
                     className={cn(
-                      'pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-center scale-x-0 bg-gold transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-x-100 group-hover:bg-[#84f5a2]',
+                      'pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-center scale-x-0 bg-gold transition-transform duration-300 ease-out group-hover:scale-x-100',
                       isActive && 'scale-x-100',
                     )}
                   />
@@ -229,7 +229,7 @@ export function Header() {
                       <span
                         aria-hidden
                         className={cn(
-                          'absolute inset-y-2 left-0 w-[3px] origin-center scale-y-0 rounded-full bg-gold transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-y-100 group-hover:bg-[#fa8a52]',
+                          'absolute inset-y-2 left-0 w-[3px] origin-center scale-y-0 bg-gold transition-transform duration-300 ease-out group-hover:scale-y-100',
                           isActive && 'scale-y-100',
                         )}
                       />

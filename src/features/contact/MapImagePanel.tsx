@@ -51,9 +51,9 @@ export function MapImagePanel({ contact, onUpdated }: Props) {
         />
       )}
     >
-      <div className="h-full min-h-[280px] overflow-hidden border border-paper-line bg-paper-dim">
+      <div className="h-full min-h-[280px] overflow-hidden rounded-[20px] border border-paper-line bg-paper-dim">
         {link && image ? (
-          <a href={link} target="_blank" rel="noreferrer" className="block h-full">
+          <a href={link} target="_blank" rel="noreferrer" className="block h-full min-h-[280px]">
             {body}
           </a>
         ) : (

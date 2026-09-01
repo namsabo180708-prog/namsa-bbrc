@@ -174,7 +174,10 @@ export interface ContactRoute {
 
 export interface ContactInfo {
   id: string
+  /** 한글 도로명 주소 */
   address: string
+  /** 영문 주소 */
+  addressEn: string
   phone: string
   fax: string
   email: string

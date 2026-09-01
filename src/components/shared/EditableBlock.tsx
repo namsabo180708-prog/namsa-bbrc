@@ -21,7 +21,12 @@ export function EditableBlock({ label, children, className, renderEditor }: Edit
     <div
       className={cn('group relative', className)}
       onClick={() => {
+        // 터치(모바일)에서만 탭으로 안내 오버레이를 토글. 데스크톱은 hover로 표시.
         if (isAdminMode) setRevealed((r) => !r)
+      }}
+      onMouseLeave={() => {
+        // 클릭으로 revealed가 켜진 뒤 마우스가 나가도 오버레이가 남는 문제 방지
+        if (revealed) setRevealed(false)
       }}
     >
       {children}
@@ -31,7 +36,7 @@ export function EditableBlock({ label, children, className, renderEditor }: Edit
             aria-hidden
             className={cn(
               'pointer-events-none absolute inset-0 z-[5] flex items-center justify-center rounded-[20px] border-2 border-gold bg-paper/70 px-6 text-center opacity-0 transition-opacity duration-200 ease-out sm:group-hover:opacity-100',
-              revealed && 'opacity-100'
+              revealed && 'opacity-100',
             )}
           >
             <p className="text-sm font-medium text-ink">
@@ -42,9 +47,14 @@ export function EditableBlock({ label, children, className, renderEditor }: Edit
             type="button"
             onClick={(e) => {
               e.stopPropagation()
+              setRevealed(false)
               setOpen(true)
             }}
-            className="absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded-sm bg-ink/85 px-2.5 py-1 text-xs font-medium text-gold opacity-100 shadow transition sm:opacity-0 sm:group-hover:opacity-100"
+            className={cn(
+              'absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded-sm bg-ink/85 px-2.5 py-1 text-xs font-medium text-gold shadow transition-opacity duration-200',
+              // 모바일: 항상 표시 / 데스크톱: 호버 시에만 (revealed 잔상과 무관)
+              'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
+            )}
             aria-label={`${label} 편집`}
           >
             <Pencil className="h-3.5 w-3.5" />

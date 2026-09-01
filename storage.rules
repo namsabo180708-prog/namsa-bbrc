@@ -1,8 +1,12 @@
 rules_version = '2';
 
-// tlmchurch — Firebase Storage
+// namsa-bbrc — Firebase Storage
 // 읽기: 공개 (사이트 이미지/영상 표시)
 // 쓰기: Firestore admins/{uid} 에 등록된 관리자만 + 용량/타입 제한
+//
+// isAdmin()은 Firestore admins 문서를 교차 확인한다.
+// Storage Rules에서 firestore.exists 사용 시 Firebase Console의
+// "Cross-service Rules" / Firestore 연동이 켜져 있어야 한다.
 service firebase.storage {
   match /b/{bucket}/o {
     function isSignedIn() {

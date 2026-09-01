@@ -217,6 +217,7 @@ export async function getContactInfo(): Promise<ContactInfo> {
     (await fetchDoc<ContactInfo>('contactInfo', 'main', (id, d) => ({
       id,
       address: String(d.address ?? ''),
+      addressEn: String(d.addressEn ?? seedContact.addressEn),
       phone: String(d.phone ?? ''),
       fax: String(d.fax ?? ''),
       email: String(d.email ?? ''),

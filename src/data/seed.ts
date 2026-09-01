@@ -26,9 +26,9 @@ export const seedSiteSettings: SiteSettings = {
   ],
   footerText: '그리스도의 사랑으로 이웃을 섬기는 교회',
   contact: {
-    phone: '(02)453-7171',
+    phone: '031-322-0191',
     email: 'namsabo180708@gmail.com',
-    address: '02621 서울특별시 동대문구 전농로 20 (답십리동) 스타클래스 지상1층, 지하1층',
+    address: '17115 경기도 용인시 처인구 남사읍 처인성로 896',
   },
 }
 
@@ -97,34 +97,28 @@ export const seedWorship: WorshipScheduleItem[] = [
 
 export const seedContact: ContactInfo = {
   id: 'main',
-  address: '02621 서울특별시 동대문구 전농로 20 (답십리동) 스타클래스 지상1층, 지하1층',
-  phone: '(02)453-7171',
-  fax: '(02)453-7361',
+  address: '17115 경기도 용인시 처인구 남사읍 처인성로 896',
+  addressEn: '896 Cheoinseong-ro, Namsa-eup, Cheoin-gu, Yongin-si, Gyeonggi-do 17115',
+  phone: '031-322-0191',
+  fax: '031-322-0199',
   email: 'namsabo180708@gmail.com',
-  siteUrl: 'https://www.tlmc.kr',
-  mapImageUrl: '/photos/directions-map.webp',
-  mapLinkUrl:
-    'https://map.kakao.com/?urlX=512492&urlY=1129706&urlLevel=3&map_type=TYPE_MAP&map_hybrid=false',
+  siteUrl: 'https://남사보배로운교회.kr',
+  // 옛 약도 플레이스홀더를 넣지 않는다 — Firestore 로딩 전 잘못된 이미지가 깜빡이는 원인.
+  mapImageUrl: '',
+  mapLinkUrl: undefined,
   routes: [
     {
-      id: 'route-1',
-      iconType: 'subway',
-      title: '1호선·2호선',
-      description: '신설동역 하차 → 도보 이동',
-      order: 1,
-    },
-    {
-      id: 'route-2',
+      id: 'route-bus',
       iconType: 'bus',
-      title: '간선버스',
-      description: '전농로 인근 정류장 하차',
+      title: '시내버스',
+      description: '남사읍·처인성로 방면 정류장 하차 후 도보 이동',
       order: 1,
     },
     {
-      id: 'route-3',
+      id: 'route-walk',
       iconType: 'walk',
-      title: '역에서 도보',
-      description: '도보 약 10분',
+      title: '자가용·도보',
+      description: '처인성로 896 교회 정문 (주차는 주차안내 탭 참고)',
       order: 1,
     },
   ],

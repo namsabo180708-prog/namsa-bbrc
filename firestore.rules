@@ -6,6 +6,7 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // exists()/get()는 규칙 평가용 — 클라이언트의 admins 읽기 권한과 무관하게 동작한다.
     function isAdmin() {
       return isSignedIn()
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
@@ -16,9 +17,18 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'super';
     }
 
-    // Admin registry: read by signed-in users; write only by super (prefer Cloud Functions)
+    /**
+     * Admin registry
+     * - 로그인 경로: 본인 UID 문서 get 만 필요 → 반드시 isSignedIn() + uid 일치
+     * - 관리자 목록(list): 관리자만 (AdminManageModal)
+     * - 쓰기는 super 전용 (최초 super는 Console/Admin SDK로 시딩)
+     *
+     * 주의: allow read: if isAdmin() 로 두면
+     * “admins를 읽어야 isAdmin인데, isAdmin이어야 읽음” 순환으로 로그인이 깨진다.
+     */
     match /admins/{uid} {
-      allow read: if isSignedIn();
+      allow get: if isSignedIn() && request.auth.uid == uid;
+      allow list: if isAdmin();
       allow create, update, delete: if isSuperAdmin();
     }
 
@@ -97,7 +107,7 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // 남경기노회 문서함: 완전 비공개 — 관리자만 read/write (공개 read 없음)
+    // 남경기노회 문서함: 완전 비공개 — 관리자만 read/write
     match /presbyteryDocuments/{id} {
       allow read, write: if isAdmin();
     }

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { PastorGreeting } from '../../types/content'
 import { EditableBlock } from '../../components/shared/EditableBlock'
-import { Reveal } from '../../components/shared/Reveal'
 import { FormField } from '../../components/ui/form-field'
 import { MediaInputField } from '../../components/shared/MediaInputField'
 import { Input } from '../../components/ui/input'
@@ -9,23 +8,16 @@ import { Textarea } from '../../components/ui/textarea'
 import { Button } from '../../components/ui/button'
 import { extractFirstSentence, saveDocument } from '../../lib/content-service'
 import { useAdminStore } from '../../store/admin-store'
-import { useMicroParallax } from '../../hooks/useMicroParallax'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 
 interface Props {
   greeting: PastorGreeting
   onUpdated?: () => void
-  /** 밴드 안 축소 레이아웃 (기본 true) */
+  /** 홈 스플릿 레이아웃 (기본 true) */
   compact?: boolean
 }
 
 export function PastorGreetingSection({ greeting, onUpdated, compact = true }: Props) {
   const pushToast = useAdminStore((s) => s.pushToast)
-  const reduced = usePrefersReducedMotion()
-  const photoParallaxRef = useMicroParallax<HTMLImageElement>({
-    strength: 8,
-    disabled: reduced,
-  })
 
   const quote =
     greeting.quote?.trim() ||
@@ -48,45 +40,40 @@ export function PastorGreetingSection({ greeting, onUpdated, compact = true }: P
         />
       )}
     >
-      <Reveal className="h-full">
-        <article
-          className={
-            compact
-              ? 'flex h-full flex-col gap-6 sm:gap-7'
-              : 'grid items-center gap-10 md:grid-cols-[240px_1fr]'
-          }
-        >
-          {/* Pull-quote */}
-          <blockquote className="border-t border-gold pt-4">
-            <p className="font-serif text-xl font-medium leading-snug text-paper-text sm:text-2xl">
+      <article
+        className={
+          compact
+            ? 'grid items-start gap-10 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:gap-14 lg:gap-16'
+            : 'grid items-center gap-10 md:grid-cols-[240px_1fr]'
+        }
+      >
+        <div className="mx-auto w-full max-w-sm overflow-hidden md:mx-0 md:max-w-none">
+          <img
+            src={greeting.photoUrl}
+            alt={greeting.pastorName}
+            className="aspect-[3/4] w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+
+        <div className="min-w-0 flex flex-col justify-center">
+          <blockquote className="border-l-2 border-gold pl-5 sm:pl-6">
+            <p className="font-serif text-2xl font-medium leading-snug tracking-tight text-paper-text sm:text-[1.75rem]">
               {quote}
             </p>
           </blockquote>
 
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
-            <div className="mx-auto w-36 shrink-0 overflow-hidden sm:mx-0 sm:w-40">
-              <img
-                ref={photoParallaxRef}
-                src={greeting.photoUrl}
-                alt={greeting.pastorName}
-                className="aspect-[3/4] w-full object-cover will-change-transform"
-                loading="lazy"
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="index-num text-xs font-semibold tracking-[0.14em] text-gold-deep">
-                담임목사 인사말
-              </p>
-              <h2 className="mt-1 font-serif text-xl font-semibold text-paper-text sm:text-2xl">
-                {greeting.pastorName}
-              </h2>
-              <p className="mt-3 line-clamp-6 text-base leading-relaxed text-paper-muted sm:line-clamp-8">
-                {greeting.message}
-              </p>
-            </div>
+          <div className="mt-8 sm:mt-10">
+            <h2 className="font-serif text-xl font-semibold text-paper-text sm:text-2xl">
+              {greeting.pastorName}
+            </h2>
+            <p className="mt-1 text-sm text-paper-muted">담임목사</p>
+            <p className="mt-5 max-w-prose text-base leading-relaxed text-paper-muted sm:text-[1.05rem] sm:leading-7">
+              {greeting.message}
+            </p>
           </div>
-        </article>
-      </Reveal>
+        </div>
+      </article>
     </EditableBlock>
   )
 }
