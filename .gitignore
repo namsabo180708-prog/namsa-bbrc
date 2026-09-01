@@ -1,0 +1,50 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+prd/github-firebase-info.txt
+prd/github-pat*.txt
+**/serviceAccount*.json
+**/*firebase-adminsdk*.json
+prd/documents/*.json
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Test / tooling
+coverage
+test-results
+playwright-report
+blob-report
+functions/lib
+functions/node_modules
+
+# Local-only asset staging — 용량이 크고 아직 기능에 연결 안 된 샘플
+# 이미지라 저장소/Storage에 올리지 않고 로컬에만 보관한다.
+assets-staging/
+prd/
+
+# impeccable 스킬 QA 산출물(스크린샷 등) — 저장소에 커밋하지 않음
+.impeccable/

@@ -1,0 +1,235 @@
+import { useEffect, useState } from 'react'
+import { PageShell } from '../components/layout/PageShell'
+import { Seo } from '../components/shared/Seo'
+import { TabbedPage } from '../components/shared/TabbedPage'
+import { EditableBlock } from '../components/shared/EditableBlock'
+import { FormField } from '../components/ui/form-field'
+import { Input } from '../components/ui/input'
+import { Textarea } from '../components/ui/textarea'
+import { Button } from '../components/ui/button'
+import { RouteListPanel } from '../features/contact/RouteListPanel'
+import { ParkingPanel } from '../features/contact/ParkingPanel'
+import { MapImagePanel } from '../features/contact/MapImagePanel'
+import { getContactInfo, saveDocument } from '../lib/content-service'
+import { toTelHref } from '../lib/utils'
+import type { ContactInfo } from '../types/content'
+import { seedContact } from '../data/seed'
+import { useAdminStore } from '../store/admin-store'
+import { Mail, MapPin, Phone, Printer } from 'lucide-react'
+
+export function ContactPage() {
+  const [contact, setContact] = useState<ContactInfo>(seedContact)
+  const pushToast = useAdminStore((s) => s.pushToast)
+
+  const reload = async () => {
+    setContact(await getContactInfo())
+  }
+
+  useEffect(() => {
+    void reload()
+  }, [])
+
+  return (
+    <>
+      <Seo title="오시는길" path="/contact" />
+      <PageShell
+        title="오시는길"
+        description="예배 장소와 연락처, 지도 안내입니다."
+        current="오시는길"
+      >
+        <TabbedPage
+          tabs={[
+            {
+              key: 'directions',
+              label: '오시는 방법',
+              content: (
+                <div className="space-y-10 py-2">
+                  <div className="grid gap-6 lg:grid-cols-2">
+                    <EditableBlock
+                      label="연락처 정보"
+                      className="h-full"
+                      renderEditor={(close) => (
+                        <ContactEditor
+                          contact={contact}
+                          onSave={async (next) => {
+                            try {
+                              await saveDocument('contactInfo', 'main', {
+                                address: next.address,
+                                phone: next.phone,
+                                fax: next.fax,
+                                email: next.email,
+                              })
+                              pushToast({ title: '연락처 저장됨', variant: 'success' })
+                              await reload()
+                              close()
+                            } catch (err) {
+                              pushToast({
+                                title: '저장 실패',
+                                description: err instanceof Error ? err.message : '',
+                                variant: 'error',
+                              })
+                            }
+                          }}
+                        />
+                      )}
+                    >
+                      <div className="h-full space-y-4 border border-paper-line p-6">
+                        <h2 className="font-serif text-xl font-semibold text-paper-text">교회 연락처</h2>
+                        <InfoRow icon={MapPin} label="주소" value={contact.address} />
+                        <InfoRow
+                          icon={Phone}
+                          label="전화"
+                          value={contact.phone}
+                          href={contact.phone ? toTelHref(contact.phone) : undefined}
+                        />
+                        <InfoRow icon={Printer} label="팩스" value={contact.fax} />
+                        <InfoRow
+                          icon={Mail}
+                          label="이메일"
+                          value={contact.email}
+                          href={contact.email ? `mailto:${contact.email}` : undefined}
+                        />
+                      </div>
+                    </EditableBlock>
+
+                    <MapImagePanel contact={contact} onUpdated={() => void reload()} />
+                  </div>
+
+                  <RouteListPanel routes={contact.routes} onUpdated={() => void reload()} />
+                </div>
+              ),
+            },
+            {
+              key: 'parking',
+              label: '주차안내',
+              content: (
+                <div className="py-2">
+                  <ParkingPanel contact={contact} onUpdated={() => void reload()} />
+                </div>
+              ),
+            },
+          ]}
+        />
+      </PageShell>
+    </>
+  )
+}
+
+function InfoRow({
+  icon: Icon,
+  label,
+  value,
+  href,
+}: {
+  icon: typeof MapPin
+  label: string
+  value: string
+  /** 있으면 값을 링크(tel:/mailto: 등)로 렌더링 */
+  href?: string
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-gold-deep" />
+      <div>
+        <p className="text-xs font-semibold tracking-wide text-paper-muted">{label}</p>
+        {href ? (
+          <a
+            href={href}
+            className="whitespace-pre-line text-sm text-paper-text underline-offset-2 transition hover:text-gold-deep hover:underline"
+          >
+            {value}
+          </a>
+        ) : (
+          <p className="whitespace-pre-line text-sm text-paper-text">{value}</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const CONTACT_FIELDS = [
+  {
+    key: 'address' as const,
+    label: '주소',
+    hint: '예배당 도로명 주소 · 여러 줄 입력 가능',
+    placeholder: '경기도 …',
+    multiline: true,
+  },
+  {
+    key: 'phone' as const,
+    label: '전화',
+    hint: '대표 전화번호',
+    placeholder: '031-000-0000',
+  },
+  {
+    key: 'fax' as const,
+    label: '팩스',
+    hint: '없으면 비워 두어도 됩니다',
+    placeholder: '031-000-0001',
+  },
+  {
+    key: 'email' as const,
+    label: '이메일',
+    hint: '문의용 공개 이메일',
+    placeholder: 'info@…',
+  },
+]
+
+function ContactEditor({
+  contact,
+  onSave,
+}: {
+  contact: ContactInfo
+  onSave: (c: Pick<ContactInfo, 'address' | 'phone' | 'fax' | 'email'>) => Promise<void>
+}) {
+  const [form, setForm] = useState(contact)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    setForm(contact)
+  }, [contact])
+
+  return (
+    <div className="space-y-4">
+      {CONTACT_FIELDS.map((f) =>
+        f.multiline ? (
+          <FormField key={f.key} label={f.label} htmlFor={`contact-${f.key}`} hint={f.hint}>
+            <Textarea
+              id={`contact-${f.key}`}
+              className="min-h-[80px]"
+              value={form[f.key]}
+              placeholder={f.placeholder}
+              onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+            />
+          </FormField>
+        ) : (
+          <FormField key={f.key} label={f.label} htmlFor={`contact-${f.key}`} hint={f.hint}>
+            <Input
+              id={`contact-${f.key}`}
+              value={form[f.key]}
+              placeholder={f.placeholder}
+              onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+            />
+          </FormField>
+        ),
+      )}
+      <div className="flex justify-end">
+        <Button
+          disabled={saving}
+          onClick={() => {
+            setSaving(true)
+            void onSave({
+              // 비운 필드는 기존 값 유지 (미디어와 동일 정책)
+              address: form.address.trim() || contact.address,
+              phone: form.phone.trim() || contact.phone,
+              fax: form.fax.trim() || contact.fax,
+              email: form.email.trim() || contact.email,
+            }).finally(() => setSaving(false))
+          }}
+        >
+          저장 후 게시
+        </Button>
+      </div>
+    </div>
+  )
+}
