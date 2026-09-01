@@ -42,7 +42,7 @@ export function Footer() {
           <div className="flex min-w-0 flex-col">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-10">
               <img
-                src="/logo-image/logo-full-color.png"
+                src="/logo-image/02-namsa-main-trans-logo-02.png"
                 alt={SITE_NAME}
                 className="h-12 w-auto shrink-0 sm:h-14"
               />
