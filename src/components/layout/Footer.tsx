@@ -1,11 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { SITE_NAME } from '../../types/content'
+import { SITE_NAME, DEFAULT_LOGO_SRC } from '../../types/content'
+import type { ContactInfo } from '../../types/content'
 import { useAdminStore } from '../../store/admin-store'
-import { getSiteSettings } from '../../lib/content-service'
+import { getSiteSettings, getContactInfo, saveDocument } from '../../lib/content-service'
+import { seedContact } from '../../data/seed'
+import { EditableBlock } from '../shared/EditableBlock'
+import { ContactInfoEditor } from '../../features/contact/ContactInfoEditor'
+import { LogoEditDialog } from '../shared/LogoEditDialog'
 import { cn, toTelHref } from '../../lib/utils'
 
-/** 푸터 고정 연락처 — prd/남사보배로운교회-info.txt */
+/** 푸터 폴백 연락처 — Firestore(contactInfo/main) 로딩 전·미설정 시 사용 (prd/남사보배로운교회-info.txt) */
 const FOOTER_CONTACT = {
   postal: '17115',
   addressKo: '경기도 용인시 처인구 남사읍 처인성로 896',
@@ -37,15 +42,45 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
   const isAdminMode = useAdminStore((s) => s.isAdminMode)
   const setLoginOpen = useAdminStore((s) => s.setLoginOpen)
+  const pushToast = useAdminStore((s) => s.pushToast)
 
   const [foundedYear, setFoundedYear] = useState(FOUNDED_YEAR)
+  const [logoUrl, setLogoUrl] = useState('')
+  const [contact, setContact] = useState<ContactInfo | null>(null)
+
   useEffect(() => {
     getSiteSettings()
       .then((s) => {
         if (s.foundedYear && s.foundedYear > 0) setFoundedYear(s.foundedYear)
+        setLogoUrl(s.logoUrl ?? '')
       })
       .catch(() => {})
   }, [])
+
+  const reloadContact = useCallback(async () => {
+    try {
+      setContact(await getContactInfo())
+    } catch {
+      /* 폴백 상수(FOOTER_CONTACT) 사용 */
+    }
+  }, [])
+
+  useEffect(() => {
+    void reloadContact()
+  }, [reloadContact])
+
+  const editorContact: ContactInfo = contact ?? seedContact
+  const addressFull =
+    contact?.address?.trim() || `${FOOTER_CONTACT.postal} ${FOOTER_CONTACT.addressKo}`
+  const addressEn = contact?.addressEn?.trim() || FOOTER_CONTACT.addressEn
+  const tel = contact?.phone?.trim() || FOOTER_CONTACT.tel
+  const fax = contact?.fax?.trim() || FOOTER_CONTACT.fax
+  const website = contact?.siteUrl?.trim() || FOOTER_CONTACT.website
+  const email = contact?.email?.trim() || FOOTER_CONTACT.email
+
+  const postalMatch = addressFull.match(/^(\d{5})\s+(.*)$/)
+  const postal = postalMatch?.[1] ?? ''
+  const addressRest = postalMatch?.[2] ?? addressFull
 
   return (
     <footer className="site-footer mt-auto">
@@ -54,42 +89,76 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-[1fr_auto] sm:items-stretch sm:gap-14 lg:gap-20">
           <div className="flex min-w-0 flex-col">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-10">
-              <img
-                src="/logo-image/webp/03-namsa-main-trans-logo.webp"
-                alt={SITE_NAME}
-                className="h-12 w-auto shrink-0 sm:h-14"
-              />
-              <address className="not-italic max-w-xl space-y-1.5 text-sm leading-relaxed text-ink-muted">
-                <p className="text-paper">
-                  <span className="index-num">{FOOTER_CONTACT.postal}</span>{' '}
-                  {FOOTER_CONTACT.addressKo}
-                </p>
-                <p className="text-xs sm:text-sm">{FOOTER_CONTACT.addressEn}</p>
-                <p className="pt-1">
-                  <span className="font-medium text-paper">Tel</span> :{' '}
-                  <a
-                    href={toTelHref(FOOTER_CONTACT.tel)}
-                    className="underline-offset-2 transition-colors duration-200 hover:text-gold hover:underline"
-                  >
-                    {FOOTER_CONTACT.tel}
-                  </a>
-                  <span className="mx-2 text-ink-line" aria-hidden>
-                    |
-                  </span>
-                  <span className="font-medium text-paper">Fax</span> : {FOOTER_CONTACT.fax}
-                </p>
-                <p>
-                  <span className="font-medium text-paper">Web</span> :{' '}
-                  <a
-                    href={FOOTER_CONTACT.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline-offset-2 transition-colors duration-200 hover:text-gold hover:underline"
-                  >
-                    {FOOTER_CONTACT.website.replace(/^https?:\/\//, '')}
-                  </a>
-                </p>
-              </address>
+              <div className="flex shrink-0 items-start gap-2">
+                <img
+                  src={logoUrl || DEFAULT_LOGO_SRC}
+                  alt={SITE_NAME}
+                  className="h-12 w-auto shrink-0 sm:h-14"
+                />
+                {isAdminMode ? (
+                  <LogoEditDialog currentLogoUrl={logoUrl} onSaved={setLogoUrl} />
+                ) : null}
+              </div>
+
+              <EditableBlock
+                label="연락처 정보"
+                className="min-w-0 flex-1"
+                renderEditor={(close) => (
+                  <ContactInfoEditor
+                    contact={editorContact}
+                    onSave={async (next) => {
+                      try {
+                        await saveDocument('contactInfo', 'main', next)
+                        pushToast({ title: '연락처 저장됨', variant: 'success' })
+                        await reloadContact()
+                        close()
+                      } catch (err) {
+                        pushToast({
+                          title: '저장 실패',
+                          description: err instanceof Error ? err.message : '',
+                          variant: 'error',
+                        })
+                      }
+                    }}
+                  />
+                )}
+              >
+                <address className="not-italic max-w-xl space-y-1.5 text-sm leading-relaxed text-ink-muted">
+                  <p className="text-paper">
+                    {postal ? (
+                      <>
+                        <span className="index-num">{postal}</span>{' '}
+                      </>
+                    ) : null}
+                    {addressRest}
+                  </p>
+                  <p className="text-xs sm:text-sm">{addressEn}</p>
+                  <p className="pt-1">
+                    <span className="font-medium text-paper">Tel</span> :{' '}
+                    <a
+                      href={toTelHref(tel)}
+                      className="underline-offset-2 transition-colors duration-200 hover:text-gold hover:underline"
+                    >
+                      {tel}
+                    </a>
+                    <span className="mx-2 text-ink-line" aria-hidden>
+                      |
+                    </span>
+                    <span className="font-medium text-paper">Fax</span> : {fax}
+                  </p>
+                  <p>
+                    <span className="font-medium text-paper">Web</span> :{' '}
+                    <a
+                      href={website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline-offset-2 transition-colors duration-200 hover:text-gold hover:underline"
+                    >
+                      {website.replace(/^https?:\/\//, '')}
+                    </a>
+                  </p>
+                </address>
+              </EditableBlock>
             </div>
 
             {/* BackToTop default 버튼 바탕(bg-gold)과 동일 톤 */}
@@ -100,10 +169,10 @@ export function Footer() {
               </span>
               Email :{' '}
               <a
-                href={`mailto:${FOOTER_CONTACT.email}`}
+                href={`mailto:${email}`}
                 className="text-gold underline-offset-2 transition-colors duration-200 hover:text-paper hover:underline"
               >
-                {FOOTER_CONTACT.email}
+                {email}
               </a>
               {!isAdminMode ? (
                 <>

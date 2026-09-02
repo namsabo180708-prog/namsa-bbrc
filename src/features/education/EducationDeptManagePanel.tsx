@@ -49,8 +49,8 @@ export function EducationDeptManagePanel({ depts, onUpdated }: Props) {
       })
       pushToast({
         title: '새 부서가 추가되었습니다',
-        description: '새로 생긴 탭에서 내용을 입력해 주세요.',
-        variant: 'success',
+        description: '새 탭에서 내용을 입력하고 사진파일을 업로드하세요.',
+        variant: 'default',
       })
       onUpdated()
     } catch (err) {

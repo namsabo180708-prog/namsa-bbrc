@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { CalendarDays, MapPin, Users } from 'lucide-react'
 import type { EducationDepartment } from '../../types/content'
 import { EditableBlock } from '../../components/shared/EditableBlock'
+import { PhotoPlaceholder } from '../../components/shared/PhotoPlaceholder'
 import { FormField } from '../../components/ui/form-field'
 import { MediaInputField } from '../../components/shared/MediaInputField'
 import { Input } from '../../components/ui/input'
@@ -42,12 +43,16 @@ export function EducationDeptPanel({ dept, onUpdated }: Props) {
           <div className="grid items-start gap-6 md:grid-cols-3 md:gap-8 lg:gap-10">
             <Reveal className="md:col-span-2">
               <div className="overflow-hidden">
-                <img
-                  src={dept.image}
-                  alt={dept.name}
-                  className="aspect-[16/10] w-full object-cover"
-                  loading="lazy"
-                />
+                {dept.image.trim() ? (
+                  <img
+                    src={dept.image}
+                    alt={dept.name}
+                    className="aspect-[16/10] w-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <PhotoPlaceholder className="aspect-[16/10] w-full" />
+                )}
               </div>
             </Reveal>
             <Reveal delay={80} className="md:col-span-1">
@@ -137,10 +142,13 @@ function DeptEditor({
         label="대표 사진"
         imageOnly
         folder={`education/${dept.deptKey}`}
-        required
         value={{ mediaUrl: form.image, mediaType: 'image' }}
         defaultUrl={dept.image}
-        hint="부서 활동·가로 사진 권장 · 비우면 현재 이미지 유지"
+        hint={
+          dept.image.trim()
+            ? '부서 활동·가로 사진 권장 · 비우면 현재 이미지 유지'
+            : '부서 활동·가로 사진 권장 · 사진파일을 업로드하세요'
+        }
         onChange={(m) => setForm({ ...form, image: m.mediaUrl })}
         onError={onError}
       />

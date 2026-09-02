@@ -25,6 +25,7 @@ export const seedSiteSettings: SiteSettings = {
     '세상으로 보냄 받는 공동체',
   ],
   footerText: '그리스도의 사랑으로 이웃을 섬기는 교회',
+  logoUrl: '',
   foundedYear: 2005,
   contact: {
     phone: '031-322-0191',
@@ -157,7 +158,7 @@ export const seedAboutTabs: AboutTab[] = [
 /** /about 교회소개 — 전경 + 본문 */
 export const seedAboutChurch: AboutChurch = {
   id: 'main',
-  heroImageUrl: '/photos/church-exterior-1.webp',
+  heroImageUrl: '',
   title: '교회소개',
   body: `대한예수교장로회 남사보배로운교회는 예수 그리스도의 십자가 복음을 중심으로, 예배·교육·선교·교제를 통해 하나님의 나라를 이 땅에 이루고자 합니다.
 
@@ -168,7 +169,7 @@ export const seedAboutChurch: AboutChurch = {
 /** /about 담임목사소개 — 인물 + 학력/경력 */
 export const seedAboutPastor: AboutPastor = {
   id: 'main',
-  photoUrl: '/photos/pastor-ryu.webp',
+  photoUrl: '',
   name: '유병구 목사',
   title: '담임목사',
   education: [
@@ -189,58 +190,48 @@ export const seedStaff: StaffMember[] = [
     id: 's1',
     name: '유병구',
     role: '담임목사',
-    photoUrl: '/photos/pastor-ryu.webp',
+    photoUrl: '',
     order: 1,
   },
   {
     id: 's2',
     name: '마훈희',
     role: '부목사',
-    photoUrl: '/photos/placeholder.png',
+    photoUrl: '',
     order: 2,
   },
   {
     id: 's3',
     name: '윤성실',
     role: '전도사',
-    photoUrl: '/photos/placeholder.png',
+    photoUrl: '',
     order: 3,
   },
   {
     id: 's4',
     name: '이은성',
     role: '전도사',
-    photoUrl: '/photos/placeholder.png',
+    photoUrl: '',
     order: 4,
   },
   {
     id: 's5',
     name: '김현수',
     role: '장로',
-    photoUrl: '/photos/placeholder.png',
+    photoUrl: '',
     order: 5,
   },
   {
     id: 's6',
     name: '김단비',
     role: '피아노',
-    photoUrl: '/photos/placeholder.png',
+    photoUrl: '',
     order: 6,
   },
 ]
 
-/**
- * 관리자가 "부서 추가"로 새 부서를 만들 때 순환 배정되는 대표사진 후보군.
- * 실시간 키워드 검색 대신, 앱 내 다른 곳에서 이미 쓰고 있는 검증된 커뮤니티/사역 테마 사진을 재사용한다.
- */
-export const educationPlaceholderImages: string[] = [
-  'https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80',
-]
+/** 장로소개 — 실데이터는 Firestore(elders)에서 관리, 관리자가 "장로 추가"로 채운다. */
+export const seedElders: StaffMember[] = []
 
 export const seedEducation: EducationDepartment[] = [
   {
@@ -250,8 +241,7 @@ export const seedEducation: EducationDepartment[] = [
     missionText: `성경 이야기와 교제를 통해 믿음의 뿌리를 세우는 초등 공동체입니다.
 
 말씀 암송과 소그룹으로 친구와 함께 예수님을 알아가며, 예배하는 아이로 자라도록 동행합니다.`,
-    image:
-      '/photos/placeholder.png',
+    image: '',
     scheduleInfo: '주일 오전 9:40',
     targetAge: '초등 1~6학년',
     place: '유초등부실',
@@ -264,8 +254,7 @@ export const seedEducation: EducationDepartment[] = [
     missionText: `청소년의 고민과 꿈을 말씀으로 품는 사역입니다.
 
 주일 예배와  성경 공부모임에서 또래와 멘토가 함께 기도하고, 세상에서 그리스도인으로 서는 연습을 합니다.`,
-    image:
-      '/photos/placeholder.png',
+    image: '',
     scheduleInfo: '주일 오전 10:00',
     targetAge: '중·고등학생',
     place: '중고등부실',
@@ -278,8 +267,7 @@ export const seedEducation: EducationDepartment[] = [
     missionText: `청년과 가정이 함께 성장하는 예배와 교제입니다.
 
 말씀 나눔과 주중 소그룹으로 서로를 붙들고, 일터와 가정에서 복음을 살아내는 공동체를 꿈꿉니다.`,
-    image:
-      '/photos/placeholder.png',
+    image: '',
     scheduleInfo: '주일 오후 · 주중 소그룹',
     targetAge: '청년·가정',
     place: '본당 / 소그룹',

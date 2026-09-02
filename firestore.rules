@@ -73,6 +73,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /elders/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /worshipSchedule/{id} {
       allow read: if true;
       allow write: if isAdmin();
@@ -105,11 +110,6 @@ service cloud.firestore {
         && request.resource.data.keys().hasAll(['title', 'contentHtml', 'isPublished', 'authorUid', 'createdAt'])
         && request.resource.data.authorUid == request.auth.uid;
       allow update, delete: if isAdmin();
-    }
-
-    // 남경기노회 문서함: 완전 비공개 — 관리자만 read/write
-    match /presbyteryDocuments/{id} {
-      allow read, write: if isAdmin();
     }
 
     match /{document=**} {

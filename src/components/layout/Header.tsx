@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { Menu, X, LogOut, Users, Megaphone, FileText, Pencil } from 'lucide-react'
-import { NAV_ITEMS, SITE_NAME } from '../../types/content'
+import { Menu, X, LogOut, Users, Megaphone, Pencil } from 'lucide-react'
+import { NAV_ITEMS, SITE_NAME, DEFAULT_LOGO_SRC } from '../../types/content'
 import { useAdminStore } from '../../store/admin-store'
 import { getSiteSettings, saveDocument } from '../../lib/content-service'
+import { LogoEditDialog } from '../shared/LogoEditDialog'
 import { Button } from '../ui/button'
 import {
   Dialog,
@@ -91,18 +92,20 @@ export function Header() {
 
   const [foundedYear, setFoundedYear] = useState(FOUNDED_YEAR)
   const [yearEditOpen, setYearEditOpen] = useState(false)
+  const [logoUrl, setLogoUrl] = useState('')
 
-  const loadFoundedYear = useCallback(() => {
+  const loadSiteSettings = useCallback(() => {
     getSiteSettings()
       .then((s) => {
         if (s.foundedYear && s.foundedYear > 0) setFoundedYear(s.foundedYear)
+        setLogoUrl(s.logoUrl ?? '')
       })
       .catch(() => {})
   }, [])
 
   useEffect(() => {
-    loadFoundedYear()
-  }, [loadFoundedYear])
+    loadSiteSettings()
+  }, [loadSiteSettings])
 
   const currentYear = new Date().getFullYear()
   const anniversary = Math.max(0, currentYear - foundedYear)
@@ -116,16 +119,21 @@ export function Header() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-[4.75rem] sm:px-6">
-        <Link to="/" className="flex min-w-0 items-center">
-          <img
-            src="/logo-image/webp/03-namsa-main-trans-logo.webp"
-            alt={SITE_NAME}
-            className={cn(
-              'h-10 w-auto transition-[filter] duration-300 sm:h-12',
-              isTransparent && 'drop-shadow-[0_1px_6px_rgba(0,0,0,0.55)]',
-            )}
-          />
-        </Link>
+        <div className="flex min-w-0 items-center gap-2">
+          <Link to="/" className="flex min-w-0 items-center">
+            <img
+              src={logoUrl || DEFAULT_LOGO_SRC}
+              alt={SITE_NAME}
+              className={cn(
+                'h-10 w-auto transition-[filter] duration-300 sm:h-12',
+                isTransparent && 'drop-shadow-[0_1px_6px_rgba(0,0,0,0.55)]',
+              )}
+            />
+          </Link>
+          {isAdminMode ? (
+            <LogoEditDialog currentLogoUrl={logoUrl} onSaved={setLogoUrl} />
+          ) : null}
+        </div>
 
         <nav className="hidden items-center gap-1 lg:flex">
           {NAV_ITEMS.map((item) => (
@@ -175,17 +183,6 @@ export function Header() {
                   관리자 관리
                 </Button>
               ) : null}
-              <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className="hidden border-ink-line text-paper hover:bg-ink-soft sm:inline-flex"
-              >
-                <Link to="/admin/nam-gyeonggi">
-                  <FileText className="h-4 w-4" />
-                  남경기노회
-                </Link>
-              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -277,21 +274,12 @@ export function Header() {
                 </button>
               ) : null}
               {isAdminMode ? (
-                <Link
-                  to="/admin/nam-gyeonggi"
+                <button
+                  type="button"
                   className={cn(
                     'px-5 py-3 text-left text-sm font-medium text-ink-muted transition-colors hover:bg-ink hover:text-paper',
                     admin?.role !== 'super' && 'border-t border-ink-line',
                   )}
-                  onClick={closeMenu}
-                >
-                  남경기노회
-                </Link>
-              ) : null}
-              {isAdminMode ? (
-                <button
-                  type="button"
-                  className="px-5 py-3 text-left text-sm font-medium text-ink-muted transition-colors hover:bg-ink hover:text-paper"
                   onClick={() => {
                     closeMenu()
                     setPopupManageOpen(true)

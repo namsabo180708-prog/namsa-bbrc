@@ -23,6 +23,7 @@ import {
   seedAnnualMotto,
   seedPastorGreeting,
   seedSiteSettings,
+  seedElders,
   seedStaff,
   seedWorship,
 } from '../data/seed'
@@ -38,7 +39,6 @@ import type {
   MissionItem,
   NewsPost,
   PastorGreeting,
-  PresbyteryDocument,
   RouteIconType,
   SitePopup,
   SiteSettings,
@@ -136,6 +136,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       slogan: String(d.slogan ?? ''),
       mottoLines: Array.isArray(d.mottoLines) ? d.mottoLines.map(String) : [],
       footerText: String(d.footerText ?? ''),
+      logoUrl: String(d.logoUrl ?? ''),
       foundedYear:
         d.foundedYear != null && d.foundedYear !== '' && !Number.isNaN(Number(d.foundedYear))
           ? Number(d.foundedYear)
@@ -253,7 +254,7 @@ export async function getAboutChurch(): Promise<AboutChurch> {
   return (
     (await fetchDoc<AboutChurch>('aboutChurch', 'main', (id, d) => ({
       id,
-      heroImageUrl: String(d.heroImageUrl ?? seedAboutChurch.heroImageUrl),
+      heroImageUrl: String(d.heroImageUrl ?? ''),
       title: String(d.title ?? seedAboutChurch.title),
       body: String(d.body ?? seedAboutChurch.body),
       updatedAt: String(d.updatedAt ?? ''),
@@ -270,7 +271,7 @@ export async function getAboutPastor(): Promise<AboutPastor> {
       const career = Array.isArray(d.career) ? d.career.map(String) : seedAboutPastor.career
       return {
         id,
-        photoUrl: String(d.photoUrl ?? seedAboutPastor.photoUrl),
+        photoUrl: String(d.photoUrl ?? ''),
         name: String(d.name ?? seedAboutPastor.name),
         title: String(d.title ?? seedAboutPastor.title),
         education,
@@ -307,6 +308,21 @@ export async function getStaffMembers(): Promise<StaffMember[]> {
     'order',
   )
   return (remote ?? seedStaff).sort((a, b) => a.order - b.order)
+}
+
+export async function getElders(): Promise<StaffMember[]> {
+  const remote = await fetchCollection<StaffMember>(
+    'elders',
+    (id, d) => ({
+      id,
+      name: String(d.name ?? ''),
+      role: String(d.role ?? ''),
+      photoUrl: String(d.photoUrl ?? ''),
+      order: Number(d.order ?? 0),
+    }),
+    'order',
+  )
+  return (remote ?? seedElders).sort((a, b) => a.order - b.order)
 }
 
 export async function getEducationDepartments(): Promise<EducationDepartment[]> {
@@ -425,44 +441,6 @@ export async function getNewsPost(id: string): Promise<NewsPost | null> {
     }
   }
   return seedNews.find((n) => n.id === id) ?? null
-}
-
-/**
- * 남경기노회 문서함 — 시드/공개 폴백 없음 (완전 관리자 전용, 로그인 안 됐으면 빈 배열).
- * 구분(수신/발신) 필터는 서버 쿼리가 아니라 호출부(NamGyeonggiDocsPage)에서 클라이언트 사이드로
- * 처리한다 — where+orderBy 조합에 필요한 복합 색인이 아직 없기 때문. 문서량이 많아지면
- * firestore.indexes.json에 색인을 추가하고 이 함수에 direction 옵션을 다시 넣는다.
- */
-export async function getPresbyteryDocuments(opts?: { pageSize?: number }): Promise<PresbyteryDocument[]> {
-  if (!db || !isFirebaseConfigured) return []
-  try {
-    const col = collection(db, 'presbyteryDocuments')
-    const q = query(col, orderBy('uploadedAt', 'desc'), limit(opts?.pageSize ?? 200))
-    const snap = await getDocs(q)
-    return snap.docs.map((d) => {
-      const data = d.data()
-      return {
-        id: d.id,
-        title: String(data.title ?? ''),
-        direction: data.direction === 'outbound' ? 'outbound' : 'inbound',
-        fileType: data.fileType === 'pdf' ? 'pdf' : 'other',
-        fileUrl: String(data.fileUrl ?? ''),
-        fileName: String(data.fileName ?? ''),
-        uploadedBy: String(data.uploadedBy ?? ''),
-        uploadedAt: String(data.uploadedAt ?? ''),
-        isRead: Boolean(data.isRead),
-        note: data.note ? String(data.note) : undefined,
-      } satisfies PresbyteryDocument
-    })
-  } catch (err) {
-    console.error('[content-service] getPresbyteryDocuments() failed:', err)
-    return []
-  }
-}
-
-export async function markPresbyteryDocumentRead(id: string): Promise<void> {
-  if (!db) throw new Error('Firebase가 설정되지 않았습니다.')
-  await setDoc(doc(db, 'presbyteryDocuments', id), { isRead: true }, { merge: true })
 }
 
 export async function saveDocument(

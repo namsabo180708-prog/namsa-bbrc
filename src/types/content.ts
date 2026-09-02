@@ -27,6 +27,8 @@ export interface SiteSettings {
   slogan: string
   mottoLines: string[]
   footerText: string
+  /** 헤더·푸터 공통 로고 이미지 URL. 비우면 DEFAULT_LOGO_SRC 사용 */
+  logoUrl?: string
   /** 교회 설립 연도 — Topbar 하단 스트립·푸터 저작권 표기에 사용 */
   foundedYear?: number
   contact: {
@@ -151,24 +153,6 @@ export interface NewsPost {
   viewCount?: number
 }
 
-/** 남경기노회 문서함 — 노회↔교회 문서 수발신 방향 */
-export type PresbyteryDocDirection = 'inbound' | 'outbound'
-export type PresbyteryDocFileType = 'pdf' | 'other'
-
-export interface PresbyteryDocument {
-  id: string
-  title: string
-  direction: PresbyteryDocDirection
-  fileType: PresbyteryDocFileType
-  fileUrl: string
-  fileName: string
-  uploadedBy: string
-  uploadedAt: string
-  /** 수신(inbound) 문서에만 의미 있음 */
-  isRead: boolean
-  note?: string
-}
-
 /** 오시는길 "오시는 방법" 경로 안내 아이콘 종류 */
 export type RouteIconType = 'subway' | 'bus' | 'walk'
 
@@ -205,6 +189,9 @@ export interface ContactInfo {
   /** 주차 요령 안내 문구. 한 줄 = 한 항목 */
   parkingNotices: string[]
 }
+
+/** siteSettings.logoUrl 이 비어 있을 때 헤더·푸터가 사용하는 기본 로고 (public/) */
+export const DEFAULT_LOGO_SRC = '/logo-image/webp/03-namsa-main-trans-logo.webp'
 
 export const SITE_NAME = '대한예수교장로회 남사보배로운교회'
 /** 브라우저 탭 타이틀 전용 축약 브랜딩 — 로고 alt·저작권 문구 등에는 쓰지 않는다 */

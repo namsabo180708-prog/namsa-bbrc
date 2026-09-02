@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { educationPlaceholderImages, seedEducation } from '../data/seed'
+import { seedEducation } from '../data/seed'
 import {
   createBlankEducationDept,
   isDefaultEducationDept,
@@ -152,17 +152,8 @@ describe('createBlankEducationDept', () => {
     expect(isDefaultEducationDept(dept.deptKey)).toBe(false)
   })
 
-  it('auto-assigns a placeholder image from the pool instead of leaving it blank', () => {
-    const dept = createBlankEducationDept(5)
-    expect(dept.image).toBeTruthy()
-    expect(educationPlaceholderImages).toContain(dept.image)
-  })
-
-  it('cycles through the placeholder pool as order increases, wrapping around', () => {
-    const poolSize = educationPlaceholderImages.length
-    const first = createBlankEducationDept(1)
-    const wrapped = createBlankEducationDept(1 + poolSize)
-    expect(first.image).toBe(educationPlaceholderImages[0])
-    expect(wrapped.image).toBe(first.image)
+  it('leaves the representative image blank — admin uploads it afterwards', () => {
+    expect(createBlankEducationDept(1).image).toBe('')
+    expect(createBlankEducationDept(5).image).toBe('')
   })
 })

@@ -1,5 +1,5 @@
 import type { EducationDepartment } from '../types/content'
-import { educationPlaceholderImages, seedEducation } from '../data/seed'
+import { seedEducation } from '../data/seed'
 
 /** 삭제 불가 고정 부서 순서. */
 export const EDUCATION_DEPT_ORDER = ['elementary', 'youth', 'youngadult'] as const
@@ -56,16 +56,10 @@ export function orderEducationDepartments(
   return [...defaults, ...customs]
 }
 
-/** order 기준으로 대표사진 후보군을 순환 배정 (음수/0도 항상 유효한 인덱스로 감싼다). */
-function pickPlaceholderImage(order: number, pool: string[] = educationPlaceholderImages): string {
-  if (pool.length === 0) return ''
-  const index = ((order - 1) % pool.length + pool.length) % pool.length
-  return pool[index]!
-}
-
 /**
  * 관리자 "부서 추가"로 생성되는 빈 부서 — 저장 후 해당 탭에서 개별 수정한다.
- * 대표사진은 비워두지 않고 풀에서 하나를 자동 배정해, 기존 부서처럼 대표사진이 채워진 채로 시작한다.
+ * 대표사진은 기본/시드 이미지를 넣지 않고 빈 값으로 두며, 관리자가 직접 업로드한다
+ * (교회소개·담임목사소개·사역자소개·장로소개와 동일한 정책).
  */
 export function createBlankEducationDept(order: number, now = Date.now()): EducationDepartment {
   return {
@@ -73,7 +67,7 @@ export function createBlankEducationDept(order: number, now = Date.now()): Educa
     deptKey: `custom_${now}`,
     name: '새 부서',
     missionText: '',
-    image: pickPlaceholderImage(order),
+    image: '',
     scheduleInfo: '',
     targetAge: '',
     place: '',

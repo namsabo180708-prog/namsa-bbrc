@@ -37,9 +37,6 @@ const ContactPage = lazy(() =>
 const NotFoundPage = lazy(() =>
   import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })),
 )
-const NamGyeonggiDocsPage = lazy(() =>
-  import('./pages/NamGyeonggiDocsPage').then((m) => ({ default: m.NamGyeonggiDocsPage })),
-)
 
 /** 라우트 이동 시 이전 페이지의 스크롤 위치가 그대로 남아 상단이 잘려 보이는 문제 방지 */
 function ScrollToTop() {
@@ -84,7 +81,6 @@ export default function App() {
               <Route path="/news" element={<NewsPage />} />
               <Route path="/news/:id" element={<NewsDetailPage />} />
               <Route path="/contact" element={<ContactPage />} />
-              <Route path="/admin/nam-gyeonggi" element={<NamGyeonggiDocsPage />} />
               <Route path="/404" element={<NotFoundPage />} />
               <Route path="*" element={<Navigate to="/404" replace />} />
             </Routes>

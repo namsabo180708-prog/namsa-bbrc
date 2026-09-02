@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { AboutChurch } from '../../types/content'
 import { EditableBlock } from '../../components/shared/EditableBlock'
+import { PhotoPlaceholder } from '../../components/shared/PhotoPlaceholder'
 import { FormField } from '../../components/ui/form-field'
 import { MediaInputField } from '../../components/shared/MediaInputField'
 import { Input } from '../../components/ui/input'
@@ -40,13 +41,18 @@ export function AboutChurchPanel({ data, onUpdated }: Props) {
           {/* md+: 전경 2 / 글 1 · 모바일: 사진 위 → 글 아래 */}
           <div className="grid items-stretch gap-6 md:grid-cols-3 md:gap-8 lg:gap-10">
             <Reveal className="md:col-span-2">
-              <div className="h-full overflow-hidden">
-                <img
-                  src={data.heroImageUrl}
-                  alt="교회전경"
-                  className="aspect-[16/10] h-full min-h-[220px] w-full object-cover md:aspect-auto md:min-h-[320px] lg:min-h-[380px]"
-                  loading="lazy"
-                />
+              <div className="map-ripple relative h-full overflow-hidden rounded-[20px] shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)]">
+                {data.heroImageUrl.trim() ? (
+                  <img
+                    src={data.heroImageUrl}
+                    alt="교회전경"
+                    className="aspect-[16/10] h-full min-h-[220px] w-full object-cover md:aspect-auto md:min-h-[320px] lg:min-h-[380px]"
+                    loading="lazy"
+                  />
+                ) : (
+                  <PhotoPlaceholder className="aspect-[16/10] h-full min-h-[220px] w-full md:aspect-auto md:min-h-[320px] lg:min-h-[380px]" />
+                )}
+                <span className="map-ripple__wave" aria-hidden />
               </div>
             </Reveal>
             <Reveal delay={80} className="md:col-span-1">
@@ -105,10 +111,13 @@ function ChurchEditor({
         label="교회전경 사진"
         imageOnly
         folder="about/church"
-        required
         value={{ mediaUrl: form.heroImageUrl, mediaType: 'image' }}
         defaultUrl={data.heroImageUrl}
-        hint="교회전경·가로 사진 권장 · 화면 좌측 2/3 영역 · 비우면 현재 이미지 유지"
+        hint={
+          data.heroImageUrl.trim()
+            ? '교회전경·가로 사진 권장 · 화면 좌측 2/3 영역 · 비우면 현재 이미지 유지'
+            : '교회전경·가로 사진 권장 · 화면 좌측 2/3 영역 · 사진파일을 업로드하세요'
+        }
         onChange={(m) => setForm({ ...form, heroImageUrl: m.mediaUrl })}
         onError={onError}
       />
