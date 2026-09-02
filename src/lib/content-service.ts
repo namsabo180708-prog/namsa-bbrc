@@ -449,7 +449,12 @@ export async function saveDocument(
   data: Record<string, unknown>,
 ): Promise<void> {
   if (!db) throw new Error('Firebase가 설정되지 않았습니다.')
-  const payload = { ...data }
+  // Firestore setDoc은 undefined 필드를 거부한다 — 저장 전에 걸러낸다.
+  // (merge: true 이므로 키가 빠지면 해당 필드는 그대로 유지됨)
+  const payload: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) payload[key] = value
+  }
   if (typeof payload.contentHtml === 'string') {
     payload.contentHtml = sanitizeHtml(payload.contentHtml)
   }

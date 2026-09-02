@@ -52,7 +52,11 @@ export function HeroEditor({
     try {
       const media = resolveMedia()
       await saveDocument('heroSlides', form.id, {
-        ...form,
+        tag: form.tag,
+        title: form.title,
+        subtitle: form.subtitle,
+        // Firestore는 undefined를 거부한다 — 선택 필드는 항상 문자열로 정규화
+        linkUrl: (form.linkUrl ?? '').trim(),
         mediaUrl: media.mediaUrl,
         mediaType: media.mediaType,
         isActive: form.isActive !== false,
