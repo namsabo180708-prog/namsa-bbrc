@@ -86,6 +86,15 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
   }
+
+  /* 가로 스크롤 칩 줄 등에서 스크롤바를 숨긴다(스크롤 자체는 유지). */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* 푸터 배경 강제 — Stone & Leaf ink-soft / ink-line */

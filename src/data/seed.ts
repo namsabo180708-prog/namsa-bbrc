@@ -362,9 +362,11 @@ export const seedNews: NewsPost[] = [
     id: 'n1',
     title: '2026년 표어 선포 예배 안내',
     contentHtml:
-      '<p>새해 표어 <strong>옛 사람을 벗고 새사람을 입자</strong>를 선포하는 예배가 진행됩니다.</p>',
+      '<p>새해 표어 <strong>옛 사람을 벗고 새사람을 입자</strong>를 선포하는 예배가 진행됩니다. 온 성도가 함께 모여 한 해의 방향을 확인하는 시간입니다.</p>',
     thumbnail:
       'https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=600&q=80',
+    category: '공지',
+    pinned: true,
     authorUid: 'seed',
     createdAt: '2026-01-05T00:00:00.000Z',
     isPublished: true,
@@ -373,9 +375,10 @@ export const seedNews: NewsPost[] = [
   {
     id: 'n2',
     title: '다음세대 여름성경학교 모집',
-    contentHtml: '<p>유치부·유초등부 여름성경학교 신청을 받습니다.</p>',
+    contentHtml: '<p>유치부·유초등부 여름성경학교 신청을 받습니다. 신청서는 교육관 입구에 비치되어 있습니다.</p>',
     thumbnail:
       'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=600&q=80',
+    category: '교육',
     authorUid: 'seed',
     createdAt: '2026-02-10T00:00:00.000Z',
     isPublished: true,
@@ -387,9 +390,35 @@ export const seedNews: NewsPost[] = [
     contentHtml: '<p>국내·국외 선교 사역을 위한 헌신 주일을 드립니다.</p>',
     thumbnail:
       'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=80',
+    category: '선교',
     authorUid: 'seed',
     createdAt: '2026-03-01T00:00:00.000Z',
     isPublished: true,
     viewCount: 19,
+  },
+  {
+    id: 'n4',
+    title: '3월 정기 제직회 및 공동의회 안내',
+    contentHtml:
+      '<p>주일 오후 1시 30분, 본당에서 정기 제직회와 공동의회가 열립니다. 각 부서 보고와 상반기 예산 심의가 있으니 직분자께서는 참석해 주시기 바랍니다.</p>',
+    thumbnail: '',
+    category: '공지',
+    summary: '주일 오후 1시 30분 본당 · 각 부서 보고와 상반기 예산 심의',
+    authorUid: 'seed',
+    createdAt: '2026-03-08T00:00:00.000Z',
+    isPublished: true,
+    viewCount: 11,
+  },
+  {
+    id: 'n5',
+    title: '전교인 봄 나들이 예배',
+    contentHtml:
+      '<p>4월 넷째 주일, 예배 후 도보 20분 거리 공원에서 함께 점심을 나눕니다. 자세한 준비물은 주보를 통해 다시 안내합니다.</p>',
+    thumbnail: '',
+    category: '행사',
+    authorUid: 'seed',
+    createdAt: '2026-03-22T00:00:00.000Z',
+    isPublished: true,
+    viewCount: 7,
   },
 ]

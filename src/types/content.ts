@@ -129,11 +129,22 @@ export interface MissionItem {
   image?: string
 }
 
+/** 교회소식 분류 — 색으로 구분하지 않고 텍스트 라벨로만 표시한다. */
+export const NEWS_CATEGORIES = ['공지', '행사', '교육', '선교', '일반'] as const
+export type NewsCategory = (typeof NEWS_CATEGORIES)[number]
+
 export interface NewsPost {
   id: string
   title: string
   contentHtml: string
+  /** 선택 — 없으면 목록에서 썸네일 영역을 아예 렌더하지 않는다. */
   thumbnail: string
+  /** 분류. 없으면 '일반'으로 취급 */
+  category?: NewsCategory
+  /** 목록 최상단 고정 */
+  pinned?: boolean
+  /** 1~2줄 요약. 비우면 본문에서 자동 추출 */
+  summary?: string
   authorUid: string
   createdAt: string
   isPublished: boolean

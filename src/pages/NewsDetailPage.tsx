@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Pin } from 'lucide-react'
 import { PageShell } from '../components/layout/PageShell'
 import { Seo } from '../components/shared/Seo'
 import { Button } from '../components/ui/button'
@@ -12,6 +13,7 @@ import {
 } from '../components/ui/dialog'
 import { NewsEditorForm } from '../features/news/NewsEditorForm'
 import { getNewsPost, removeDocument, saveDocument } from '../lib/content-service'
+import { isDisplayableImageUrl } from '../lib/news-post'
 import { sanitizeHtml } from '../lib/sanitize'
 import { cn, formatDate } from '../lib/utils'
 import type { NewsPost } from '../types/content'
@@ -103,11 +105,30 @@ export function NewsDetailPage() {
       <Seo title={post.title} path={`/news/${post.id}`} description={post.title} />
       <PageShell title="교회소식" description={formatDate(post.createdAt)} current="교회소식">
         <article className="mx-auto max-w-3xl">
-          {post.thumbnail ? (
-            <img src={post.thumbnail} alt="" className="mb-10 aspect-[16/9] w-full object-cover" />
+          {isDisplayableImageUrl(post.thumbnail) ? (
+            <img
+              src={post.thumbnail}
+              alt=""
+              className="mb-10 aspect-[16/9] w-full rounded-[20px] border border-paper-line object-cover"
+            />
           ) : null}
-          <h1 className="font-serif text-3xl font-semibold text-paper-text sm:text-4xl">{post.title}</h1>
-          <p className="index-num mt-3 text-sm text-paper-muted">{formatDate(post.createdAt)}</p>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+            <time className="index-num text-paper-muted">{formatDate(post.createdAt)}</time>
+            {post.category ? (
+              <span className="inline-flex items-center rounded-full border border-paper-line px-2 py-0.5 font-medium text-paper-muted">
+                {post.category}
+              </span>
+            ) : null}
+            {post.pinned ? (
+              <span className="inline-flex items-center gap-1 font-medium text-gold-deep">
+                <Pin className="h-3 w-3" aria-hidden />
+                고정
+              </span>
+            ) : null}
+          </div>
+          <h1 className="mt-3 font-serif text-3xl font-semibold text-paper-text sm:text-4xl">
+            {post.title}
+          </h1>
           <div
             className="prose mt-10 max-w-none border-t border-paper-line pt-10 text-paper-muted"
             dangerouslySetInnerHTML={{ __html: post.contentHtml }}
@@ -155,6 +176,9 @@ export function NewsDetailPage() {
                     title: payload.title,
                     contentHtml: sanitizeHtml(payload.contentHtml),
                     thumbnail: payload.thumbnail.trim() || post.thumbnail,
+                    category: payload.category,
+                    pinned: payload.pinned,
+                    summary: payload.summary,
                     isPublished: true,
                   })
                   pushToast({ title: '수정되었습니다', variant: 'success' })

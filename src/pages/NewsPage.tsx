@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { PageShell } from '../components/layout/PageShell'
 import { Seo } from '../components/shared/Seo'
@@ -12,19 +11,26 @@ import {
   DialogDescription,
 } from '../components/ui/dialog'
 import { NewsEditorForm } from '../features/news/NewsEditorForm'
+import { NewsRow } from '../features/news/NewsRow'
+import { CategoryFilter, type NewsFilter } from '../features/news/CategoryFilter'
 import { getNewsPosts, saveDocument } from '../lib/content-service'
 import { getPageNumbers } from '../lib/pagination'
 import { sanitizeHtml } from '../lib/sanitize'
-import { cn, formatDate } from '../lib/utils'
-import type { NewsPost } from '../types/content'
+import { cn } from '../lib/utils'
+import { NEWS_CATEGORIES, type NewsCategory, type NewsPost } from '../types/content'
 import { seedNews } from '../data/seed'
 import { useAdminStore } from '../store/admin-store'
 
-const PAGE_SIZE = 6
+const PAGE_SIZE = 8
+
+/** category가 없는 글은 '일반'으로 취급한다(목록·필터 일관성). */
+const catOf = (p: NewsPost): NewsCategory => p.category ?? '일반'
+const byNewest = (a: NewsPost, b: NewsPost) => b.createdAt.localeCompare(a.createdAt)
 
 export function NewsPage() {
   const [posts, setPosts] = useState<NewsPost[]>(seedNews)
   const [page, setPage] = useState(1)
+  const [filter, setFilter] = useState<NewsFilter>('전체')
   const [editorOpen, setEditorOpen] = useState(false)
   const isAdminMode = useAdminStore((s) => s.isAdminMode)
   const user = useAdminStore((s) => s.user)
@@ -38,50 +44,63 @@ export function NewsPage() {
     void reload()
   }, [reload])
 
-  const totalPages = Math.max(1, Math.ceil(posts.length / PAGE_SIZE))
+  const categoriesPresent = useMemo(() => {
+    const set = new Set(posts.map(catOf))
+    return NEWS_CATEGORIES.filter((c) => set.has(c))
+  }, [posts])
+
+  const { pinned, rest } = useMemo(() => {
+    const filtered =
+      filter === '전체' ? posts : posts.filter((p) => catOf(p) === filter)
+    return {
+      pinned: filtered.filter((p) => p.pinned).sort(byNewest),
+      rest: filtered.filter((p) => !p.pinned).sort(byNewest),
+    }
+  }, [posts, filter])
+
+  const totalPages = Math.max(1, Math.ceil(rest.length / PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
   const pageItems = useMemo(
-    () => posts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [posts, page],
+    () => rest.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [rest, currentPage],
   )
+  const isEmpty = pinned.length === 0 && rest.length === 0
+
+  const changeFilter = (next: NewsFilter) => {
+    setFilter(next)
+    setPage(1)
+  }
 
   return (
     <>
       <Seo title="교회소식" path="/news" />
       <PageShell title="교회소식" description="교회의 소식과 안내를 전합니다." current="교회소식">
-        {isAdminMode ? (
-          <div className="mb-6 flex justify-end">
-            <Button onClick={() => setEditorOpen(true)}>새 글 작성</Button>
-          </div>
-        ) : null}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <CategoryFilter value={filter} onChange={changeFilter} categories={categoriesPresent} />
+          {isAdminMode ? (
+            <Button className="ml-auto" onClick={() => setEditorOpen(true)}>
+              새 글 작성
+            </Button>
+          ) : null}
+        </div>
 
-        <div className="grid gap-x-6 gap-y-10 border-t border-paper-line pt-10 sm:grid-cols-2 lg:grid-cols-3">
-          {pageItems.map((post) => (
-            <Link key={post.id} to={`/news/${post.id}`} className="group block">
-              <div className="aspect-[16/10] overflow-hidden bg-paper-line">
-                {post.thumbnail ? (
-                  <img
-                    src={post.thumbnail}
-                    alt=""
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                    loading="lazy"
-                  />
-                ) : null}
-              </div>
-              <div className="border-t border-paper-line pt-4 mt-4">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="index-num text-xs text-paper-muted">{formatDate(post.createdAt)}</p>
-                  {!post.isPublished ? (
-                    <span className="text-[10px] font-semibold tracking-wide text-wine">
-                      임시저장
-                    </span>
-                  ) : null}
-                </div>
-                <h2 className="mt-1.5 line-clamp-2 font-serif text-lg font-medium text-paper-text group-hover:text-gold-deep">
-                  {post.title}
-                </h2>
-              </div>
-            </Link>
-          ))}
+        <div className="border-t border-paper-line">
+          {isEmpty ? (
+            <p className="py-16 text-center text-sm text-paper-muted">
+              {filter === '전체'
+                ? '아직 등록된 소식이 없습니다.'
+                : `'${filter}' 분류의 소식이 없습니다.`}
+            </p>
+          ) : (
+            <>
+              {currentPage === 1
+                ? pinned.map((post) => <NewsRow key={post.id} post={post} />)
+                : null}
+              {pageItems.map((post) => (
+                <NewsRow key={post.id} post={post} />
+              ))}
+            </>
+          )}
         </div>
 
         {totalPages > 1 ? (
@@ -91,15 +110,15 @@ export function NewsPage() {
           >
             <button
               type="button"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
+              disabled={currentPage <= 1}
+              onClick={() => setPage(currentPage - 1)}
               aria-label="이전 페이지"
               className="inline-flex h-8 w-8 items-center justify-center text-paper-muted transition hover:text-gold-deep disabled:pointer-events-none disabled:opacity-30"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
 
-            {getPageNumbers(page, totalPages).map((token, i) =>
+            {getPageNumbers(currentPage, totalPages).map((token, i) =>
               token === 'ellipsis' ? (
                 <span
                   key={`ellipsis-${i}`}
@@ -112,11 +131,11 @@ export function NewsPage() {
                 <button
                   key={token}
                   type="button"
-                  aria-current={token === page ? 'page' : undefined}
+                  aria-current={token === currentPage ? 'page' : undefined}
                   onClick={() => setPage(token)}
                   className={cn(
                     'index-num inline-flex h-8 w-8 items-center justify-center text-sm transition',
-                    token === page
+                    token === currentPage
                       ? 'font-semibold text-gold-deep'
                       : 'text-paper-muted hover:text-paper-text',
                   )}
@@ -128,8 +147,8 @@ export function NewsPage() {
 
             <button
               type="button"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
+              disabled={currentPage >= totalPages}
+              onClick={() => setPage(currentPage + 1)}
               aria-label="다음 페이지"
               className="inline-flex h-8 w-8 items-center justify-center text-paper-muted transition hover:text-gold-deep disabled:pointer-events-none disabled:opacity-30"
             >
@@ -155,6 +174,9 @@ export function NewsPage() {
                     title: payload.title,
                     contentHtml: sanitizeHtml(payload.contentHtml),
                     thumbnail: payload.thumbnail,
+                    category: payload.category,
+                    pinned: payload.pinned,
+                    summary: payload.summary,
                     authorUid: user?.uid ?? 'admin',
                     createdAt: new Date().toISOString(),
                     isPublished: true,

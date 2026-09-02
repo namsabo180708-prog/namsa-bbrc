@@ -48,6 +48,7 @@ import type {
 import { sanitizeHtml } from './sanitize'
 import { detectMediaType } from './media'
 import { orderEducationDepartments } from './education-order'
+import { parseNewsCategory } from './news-post'
 
 async function fetchCollection<T>(
   name: string,
@@ -374,21 +375,24 @@ export async function getNewsPosts(opts?: {
         ? query(col, where('isPublished', '==', true), orderBy('createdAt', 'desc'), limit(opts?.pageSize ?? 50))
         : query(col, orderBy('createdAt', 'desc'), limit(opts?.pageSize ?? 50))
       const snap = await getDocs(q)
-      if (!snap.empty) {
-        return snap.docs.map((d) => {
-          const data = d.data()
-          return {
-            id: d.id,
-            title: String(data.title ?? ''),
-            contentHtml: sanitizeHtml(String(data.contentHtml ?? '')),
-            thumbnail: String(data.thumbnail ?? ''),
-            authorUid: String(data.authorUid ?? ''),
-            createdAt: String(data.createdAt ?? ''),
-            isPublished: Boolean(data.isPublished),
-            viewCount: Number(data.viewCount ?? 0),
-          } satisfies NewsPost
-        })
-      }
+      // Firebase가 연결된 실제 환경에서는 비어 있으면 '소식 없음'이 정답이다.
+      // (시드는 로컬/미설정 환경 프리뷰용일 뿐 — 실서비스 목록에 섞이면 안 된다.)
+      return snap.docs.map((d) => {
+        const data = d.data()
+        return {
+          id: d.id,
+          title: String(data.title ?? ''),
+          contentHtml: sanitizeHtml(String(data.contentHtml ?? '')),
+          thumbnail: String(data.thumbnail ?? ''),
+          category: parseNewsCategory(data.category),
+          pinned: data.pinned === true,
+          summary: data.summary != null ? String(data.summary) : undefined,
+          authorUid: String(data.authorUid ?? ''),
+          createdAt: String(data.createdAt ?? ''),
+          isPublished: Boolean(data.isPublished),
+          viewCount: Number(data.viewCount ?? 0),
+        } satisfies NewsPost
+      })
     } catch (err) {
       console.error('[content-service] getNewsPosts() failed, falling back to seed:', err)
     }
@@ -401,18 +405,20 @@ export async function getNewsPost(id: string): Promise<NewsPost | null> {
   if (db && isFirebaseConfigured) {
     try {
       const snap = await getDoc(doc(db, 'newsPosts', id))
-      if (snap.exists()) {
-        const data = snap.data()
-        return {
-          id: snap.id,
-          title: String(data.title ?? ''),
-          contentHtml: sanitizeHtml(String(data.contentHtml ?? '')),
-          thumbnail: String(data.thumbnail ?? ''),
-          authorUid: String(data.authorUid ?? ''),
-          createdAt: String(data.createdAt ?? ''),
-          isPublished: Boolean(data.isPublished),
-          viewCount: Number(data.viewCount ?? 0),
-        }
+      if (!snap.exists()) return null
+      const data = snap.data()
+      return {
+        id: snap.id,
+        title: String(data.title ?? ''),
+        contentHtml: sanitizeHtml(String(data.contentHtml ?? '')),
+        thumbnail: String(data.thumbnail ?? ''),
+        category: parseNewsCategory(data.category),
+        pinned: data.pinned === true,
+        summary: data.summary != null ? String(data.summary) : undefined,
+        authorUid: String(data.authorUid ?? ''),
+        createdAt: String(data.createdAt ?? ''),
+        isPublished: Boolean(data.isPublished),
+        viewCount: Number(data.viewCount ?? 0),
       }
     } catch (err) {
       console.error(`[content-service] getNewsPost("${id}") failed, falling back to seed:`, err)
