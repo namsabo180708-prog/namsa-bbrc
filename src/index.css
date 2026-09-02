@@ -179,3 +179,65 @@
   }
 }
 
+/* 교회약도 이미지 호버 — 중앙에서 바깥으로 퍼지는 물 파장.
+   3개의 링(::before, ::after, .map-ripple__wave)을 1/3씩 시차를 두고
+   무한 확대/페이드해서 연속으로 흘러가는 것처럼 보이게 한다.
+   transform/opacity만 사용해 compositor에서 처리되고, overflow:hidden
+   컨테이너가 둥근 모서리에서 파장을 잘라준다. */
+.map-ripple::before,
+.map-ripple::after,
+.map-ripple .map-ripple__wave {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 45%;
+  aspect-ratio: 1 / 1;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 0 16px rgba(255, 255, 255, 0.35),
+    0 0 0 1px rgba(63, 111, 84, 0.25),
+    inset 0 0 12px rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.map-ripple:hover::before,
+.map-ripple:hover::after,
+.map-ripple:hover .map-ripple__wave {
+  animation: map-ripple-wave 2.4s ease-out infinite;
+}
+
+.map-ripple:hover::after {
+  animation-delay: 0.8s;
+}
+
+.map-ripple:hover .map-ripple__wave {
+  animation-delay: 1.6s;
+}
+
+@keyframes map-ripple-wave {
+  0% {
+    transform: translate(-50%, -50%) scale(0.15);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(5);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-ripple:hover::before,
+  .map-ripple:hover::after,
+  .map-ripple:hover .map-ripple__wave {
+    animation: none;
+  }
+}
+

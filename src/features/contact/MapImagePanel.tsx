@@ -7,6 +7,7 @@ import { Input } from '../../components/ui/input'
 import { Button } from '../../components/ui/button'
 import { saveDocument } from '../../lib/content-service'
 import { useAdminStore } from '../../store/admin-store'
+import { cn } from '../../lib/utils'
 
 interface Props {
   contact: ContactInfo
@@ -51,7 +52,12 @@ export function MapImagePanel({ contact, onUpdated }: Props) {
         />
       )}
     >
-      <div className="h-full min-h-[280px] overflow-hidden rounded-[20px] border border-paper-line bg-paper-dim">
+      <div
+        className={cn(
+          'relative h-full min-h-[280px] overflow-hidden rounded-[20px] border border-paper-line bg-paper-dim',
+          image && 'map-ripple',
+        )}
+      >
         {link && image ? (
           <a href={link} target="_blank" rel="noreferrer" className="block h-full min-h-[280px]">
             {body}
@@ -59,6 +65,7 @@ export function MapImagePanel({ contact, onUpdated }: Props) {
         ) : (
           body
         )}
+        {image ? <span className="map-ripple__wave" aria-hidden /> : null}
       </div>
     </EditableBlock>
   )
