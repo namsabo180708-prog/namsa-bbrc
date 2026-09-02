@@ -78,7 +78,10 @@ export function NewsPage() {
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <CategoryFilter value={filter} onChange={changeFilter} categories={categoriesPresent} />
           {isAdminMode ? (
-            <Button className="ml-auto" onClick={() => setEditorOpen(true)}>
+            <Button
+              className="ml-auto text-white hover:text-[#cfe9db]"
+              onClick={() => setEditorOpen(true)}
+            >
               새 글 작성
             </Button>
           ) : null}

@@ -250,3 +250,64 @@
   }
 }
 
+
+/* 세그먼트 컨트롤(오시는길 탭·교회소식 분류) 알약 hover — 컬러 스키마 색
+   언더라인이 물결이 흘러오듯 왼쪽에서 부드럽게 펼쳐지고, 머무는 동안
+   밝은 지점이 라인을 따라 계속 흐른다. transform/background-position만 사용. */
+.seg-pill {
+  position: relative;
+}
+.seg-pill::after {
+  content: '';
+  position: absolute;
+  left: 1.15rem;
+  right: 1.15rem;
+  bottom: 0.5rem;
+  height: 2px;
+  border-radius: 9999px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--color-gold) 0%,
+      var(--color-gold) 42%,
+      color-mix(in srgb, var(--color-gold) 45%, white) 50%,
+      var(--color-gold) 58%,
+      var(--color-gold) 100%
+    );
+  background-size: 220% 100%;
+  background-position: 100% 0;
+  box-shadow: 0 0 8px rgba(63, 111, 84, 0.45);
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 480ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease-out;
+}
+.seg-pill:hover::after,
+.seg-pill:focus-visible::after {
+  transform: scaleX(1);
+  opacity: 1;
+  animation: seg-underline-flow 1.6s linear 320ms infinite;
+}
+/* 선택된 알약은 이미 채워져 있으니 언더라인을 숨긴다. */
+.seg-pill[aria-selected='true']::after,
+.seg-pill[data-state='active']::after {
+  content: none;
+}
+@keyframes seg-underline-flow {
+  to {
+    background-position: -120% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seg-pill::after {
+    transition: opacity 120ms linear;
+  }
+  .seg-pill:hover::after,
+  .seg-pill:focus-visible::after {
+    transform: scaleX(1);
+    animation: none;
+  }
+}

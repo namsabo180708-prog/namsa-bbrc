@@ -42,6 +42,7 @@ export function AboutPage() {
         current="교회소개"
       >
         <TabbedPage
+          variant="segmented"
           tabs={[
             {
               key: 'church',

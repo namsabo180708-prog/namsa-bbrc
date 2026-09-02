@@ -27,6 +27,7 @@ export function MissionsPage() {
         current="선교사역"
       >
         <TabbedPage
+          variant="segmented"
           tabs={[
             {
               key: 'domestic',

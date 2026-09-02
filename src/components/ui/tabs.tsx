@@ -15,8 +15,9 @@ export function TabsList({
     <TabsPrimitive.List
       className={cn(
         variant === 'segmented'
-          ? // 시니어 가독성: 테두리로 감싼 세그먼트 컨트롤 — "누르는 버튼"임이 형태로 드러난다
-            'flex w-full max-w-md gap-1.5 rounded-full border border-paper-line bg-paper-dim/70 p-1.5'
+          ? // 테두리로 감싼 세그먼트 컨트롤 — "누르는 버튼"임이 형태로 드러난다.
+            // 항목이 많으면(교육부서 등) 트랙 안에서 가로 스크롤만 허용.
+            'no-scrollbar inline-flex max-w-full items-stretch gap-1.5 overflow-x-auto rounded-full border border-paper-line bg-paper-dim/70 p-1.5'
           : 'flex w-full flex-wrap items-stretch gap-x-6 gap-y-1 border-b border-paper-line',
         className,
       )}
@@ -35,7 +36,7 @@ export function TabsTrigger({
     return (
       <TabsPrimitive.Trigger
         className={cn(
-          'inline-flex min-h-[48px] flex-1 items-center justify-center whitespace-nowrap rounded-full px-5 text-base font-semibold transition-colors',
+          'seg-pill inline-flex min-h-[48px] shrink-0 items-center justify-center whitespace-nowrap rounded-full px-5 text-base font-semibold transition-colors',
           'text-paper-text/70 hover:text-paper-text',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/45',
           'data-[state=active]:bg-gold data-[state=active]:text-paper data-[state=active]:shadow-sm',

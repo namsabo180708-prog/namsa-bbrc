@@ -51,7 +51,7 @@ export function EditableBlock({ label, children, className, renderEditor }: Edit
               setOpen(true)
             }}
             className={cn(
-              'absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded-sm bg-ink/85 px-2.5 py-1 text-xs font-medium text-gold shadow transition-opacity duration-200',
+              'absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded-sm bg-ink/85 px-2.5 py-1 text-xs font-medium text-white shadow transition-opacity duration-200',
               // 모바일: 항상 표시 / 데스크톱: 호버 시에만 (revealed 잔상과 무관)
               'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
             )}
