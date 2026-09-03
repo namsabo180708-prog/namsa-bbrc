@@ -2,6 +2,7 @@ import { useEffect, useState, type KeyboardEvent } from 'react'
 import type { StaffMember } from '../../types/content'
 import { EditableBlock } from '../../components/shared/EditableBlock'
 import { PhotoPlaceholder } from '../../components/shared/PhotoPlaceholder'
+import { RippleFrame } from '../../components/shared/RippleFrame'
 import {
   Dialog,
   DialogContent,
@@ -175,7 +176,10 @@ function PersonCard({
         />
       )}
     >
-      <article className="map-ripple group relative aspect-[3/4] w-full overflow-hidden rounded-[20px] shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)]">
+      <RippleFrame
+        as="article"
+        className="group aspect-[3/4] w-full rounded-[20px] shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)]"
+      >
         {photo ? (
           <img
             src={photo}
@@ -186,7 +190,6 @@ function PersonCard({
         ) : (
           <PhotoPlaceholder className="absolute inset-0" />
         )}
-        <span className="map-ripple__wave" aria-hidden />
         {/* 촛불빛이 닿는 순간 — 호버 시 골드 헤어라인 프레임이 번져 나타난다 */}
         <div
           aria-hidden
@@ -196,7 +199,7 @@ function PersonCard({
           <p className="text-xs font-semibold tracking-wide text-paper/80">{member.role}</p>
           <h3 className="mt-0.5 font-serif font-medium text-paper">{member.name}</h3>
         </div>
-      </article>
+      </RippleFrame>
     </EditableBlock>
   )
 }

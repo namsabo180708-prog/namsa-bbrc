@@ -8,6 +8,7 @@ import { LoginModal } from './features/admin/LoginModal'
 import { AdminManageModal } from './features/admin/AdminManageModal'
 import { PopupManageModal } from './features/popup/PopupManageModal'
 import { PopupRenderer } from './features/popup/PopupRenderer'
+import { PwaUpdatePrompt } from './features/pwa/PwaUpdatePrompt'
 import { useAdminStore } from './store/admin-store'
 
 const HomePage = lazy(() =>
@@ -93,6 +94,7 @@ export default function App() {
         <PopupManageModal />
         <PopupRenderer />
         <ToastViewport />
+        <PwaUpdatePrompt />
       </div>
     </BrowserRouter>
   )

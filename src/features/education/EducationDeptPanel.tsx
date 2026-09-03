@@ -3,6 +3,7 @@ import { CalendarDays, MapPin, Users } from 'lucide-react'
 import type { EducationDepartment } from '../../types/content'
 import { EditableBlock } from '../../components/shared/EditableBlock'
 import { PhotoPlaceholder } from '../../components/shared/PhotoPlaceholder'
+import { RippleFrame } from '../../components/shared/RippleFrame'
 import { FormField } from '../../components/ui/form-field'
 import { MediaInputField } from '../../components/shared/MediaInputField'
 import { Input } from '../../components/ui/input'
@@ -42,18 +43,18 @@ export function EducationDeptPanel({ dept, onUpdated }: Props) {
         <div className="mx-auto w-full max-w-6xl px-1 sm:px-0">
           <div className="grid items-start gap-6 md:grid-cols-3 md:gap-8 lg:gap-10">
             <Reveal className="md:col-span-2">
-              <div className="overflow-hidden">
+              <RippleFrame className="aspect-[16/10] rounded-[20px] shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)]">
                 {dept.image.trim() ? (
                   <img
                     src={dept.image}
                     alt={dept.name}
-                    className="aspect-[16/10] w-full object-cover"
+                    className="h-full w-full object-cover"
                     loading="lazy"
                   />
                 ) : (
-                  <PhotoPlaceholder className="aspect-[16/10] w-full" />
+                  <PhotoPlaceholder className="h-full w-full" />
                 )}
-              </div>
+              </RippleFrame>
             </Reveal>
             <Reveal delay={80} className="md:col-span-1">
               <div className="flex h-full flex-col justify-center border-l border-paper-line pl-6 md:py-2 md:pl-8">

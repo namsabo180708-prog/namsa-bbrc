@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Settings } from 'lucide-react'
 import type { HeroSlide } from '../../types/content'
 import { useAdminStore } from '../../store/admin-store'
 import { seedHeroSlides } from '../../data/seed'
+import { useAdminHintToast } from '../../hooks/useAdminHintToast'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { cn } from '../../lib/utils'
 import { HeroMediaBackground } from './HeroMediaBackground'
@@ -18,7 +19,6 @@ export function HeroSlider({ slides }: HeroSliderProps) {
   const [paused, setPaused] = useState(false)
   const reducedMotion = usePrefersReducedMotion()
   const isAdminMode = useAdminStore((s) => s.isAdminMode)
-  const pushToast = useAdminStore((s) => s.pushToast)
   const list = slides.length > 0 ? slides : seedHeroSlides
   const count = list.length
 
@@ -56,11 +56,11 @@ export function HeroSlider({ slides }: HeroSliderProps) {
   const go = (dir: -1 | 1) => setIndex((i) => (i + dir + count) % count)
 
   // 배경 미디어가 비어 있는 슬라이드를 관리자가 볼 때 저장 안내 토스트를 띄운다.
-  const currentHasMedia = Boolean(current.mediaUrl?.trim())
-  useEffect(() => {
-    if (!isAdminMode || currentHasMedia) return
-    pushToast({ title: '슬라이드 이미지를 저장해 주세요!', variant: 'default' })
-  }, [isAdminMode, currentHasMedia, current.id, pushToast])
+  useAdminHintToast(
+    !current.mediaUrl?.trim(),
+    '슬라이드 이미지를 저장해 주세요!',
+    current.id,
+  )
 
   /**
    * 배경 미디어 패럴랙스 — 페이지가 s px 스크롤되면 섹션은 s만큼 위로 이동하고,

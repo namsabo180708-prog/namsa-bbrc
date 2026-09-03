@@ -1,6 +1,7 @@
 import { MapPin } from 'lucide-react'
 import type { MissionItem } from '../../types/content'
 import { EditableBlock } from '../../components/shared/EditableBlock'
+import { RippleFrame } from '../../components/shared/RippleFrame'
 import { Reveal } from '../../components/shared/Reveal'
 import { removeDocument, saveDocument } from '../../lib/content-service'
 import { missionsByType, type MissionType } from '../../lib/mission-list'
@@ -90,28 +91,30 @@ function MissionCard({ item }: { item: MissionItem }) {
 
   return (
     <article className="group">
-      {image ? (
-        <div className="relative overflow-hidden">
-          <img
-            src={image}
-            alt={item.name}
-            className="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-            loading="lazy"
-          />
-          {/* 골드 헤어라인 프레임 — 호버 시 번지듯 나타난다 (사역자소개 카드와 동일 효과) */}
+      <RippleFrame className="aspect-[16/10] rounded-[20px] shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)]">
+        {image ? (
+          <>
+            <img
+              src={image}
+              alt={item.name}
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+              loading="lazy"
+            />
+            {/* 골드 헤어라인 프레임 — 호버 시 번지듯 나타난다 (사역자소개 카드와 동일 효과) */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-2 z-20 scale-[0.97] border border-gold opacity-0 transition-all duration-500 ease-out group-hover:scale-100 group-hover:opacity-100"
+            />
+          </>
+        ) : (
           <div
+            className="flex h-full w-full items-center justify-center bg-paper-dim text-gold/50"
             aria-hidden
-            className="pointer-events-none absolute inset-2 scale-[0.97] border border-gold opacity-0 transition-all duration-500 ease-out group-hover:scale-100 group-hover:opacity-100"
-          />
-        </div>
-      ) : (
-        <div
-          className="flex aspect-[16/10] items-center justify-center bg-paper-dim text-gold/50"
-          aria-hidden
-        >
-          <MapPin className="h-8 w-8" />
-        </div>
-      )}
+          >
+            <MapPin className="h-8 w-8" />
+          </div>
+        )}
+      </RippleFrame>
       <div className="border-t border-paper-line pt-4 mt-4">
         {region ? (
           <p className="inline-flex items-center gap-1 text-xs font-semibold text-gold-deep">

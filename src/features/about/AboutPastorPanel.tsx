@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { AboutPastor } from '../../types/content'
 import { EditableBlock } from '../../components/shared/EditableBlock'
 import { PhotoPlaceholder } from '../../components/shared/PhotoPlaceholder'
+import { RippleFrame } from '../../components/shared/RippleFrame'
 import { FormField } from '../../components/ui/form-field'
 import { MediaInputField } from '../../components/shared/MediaInputField'
 import { Input } from '../../components/ui/input'
@@ -39,7 +40,7 @@ export function AboutPastorPanel({ data, onUpdated }: Props) {
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="grid items-start gap-8 md:grid-cols-[minmax(200px,280px)_1fr] md:gap-12">
             <Reveal>
-              <div className="map-ripple relative mx-auto w-48 overflow-hidden rounded-[20px] shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)] sm:w-56 md:mx-0 md:w-full">
+              <RippleFrame className="mx-auto w-48 rounded-[20px] shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)] sm:w-56 md:mx-0 md:w-full">
                 {data.photoUrl.trim() ? (
                   <img
                     src={data.photoUrl}
@@ -50,8 +51,7 @@ export function AboutPastorPanel({ data, onUpdated }: Props) {
                 ) : (
                   <PhotoPlaceholder className="aspect-[3/4] w-full" />
                 )}
-                <span className="map-ripple__wave" aria-hidden />
-              </div>
+              </RippleFrame>
             </Reveal>
             <Reveal delay={90}>
               <div>

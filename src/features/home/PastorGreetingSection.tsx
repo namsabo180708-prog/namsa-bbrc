@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { PastorGreeting } from '../../types/content'
 import { EditableBlock } from '../../components/shared/EditableBlock'
 import { PhotoPlaceholder } from '../../components/shared/PhotoPlaceholder'
+import { RippleFrame } from '../../components/shared/RippleFrame'
 import { FormField } from '../../components/ui/form-field'
 import { MediaInputField } from '../../components/shared/MediaInputField'
 import { Input } from '../../components/ui/input'
@@ -9,6 +10,7 @@ import { Textarea } from '../../components/ui/textarea'
 import { Button } from '../../components/ui/button'
 import { extractFirstSentence, saveDocument } from '../../lib/content-service'
 import { useAdminStore } from '../../store/admin-store'
+import { useAdminHintToast } from '../../hooks/useAdminHintToast'
 
 interface Props {
   greeting: PastorGreeting
@@ -17,7 +19,6 @@ interface Props {
 
 export function PastorGreetingSection({ greeting, onUpdated }: Props) {
   const pushToast = useAdminStore((s) => s.pushToast)
-  const isAdminMode = useAdminStore((s) => s.isAdminMode)
 
   const photo = greeting.photoUrl?.trim() ?? ''
 
@@ -27,10 +28,7 @@ export function PastorGreetingSection({ greeting, onUpdated }: Props) {
     greeting.message.slice(0, 80)
 
   // 사진이 설정되지 않았으면 기본 이미지로 폴백하지 않고, 관리자에게 저장 안내 토스트를 띄운다.
-  useEffect(() => {
-    if (!isAdminMode || photo) return
-    pushToast({ title: '인사말 사진을 저장해 주세요!', variant: 'default' })
-  }, [isAdminMode, photo, pushToast])
+  useAdminHintToast(!photo, '인사말 사진을 저장해 주세요!')
 
   return (
     <EditableBlock
@@ -51,7 +49,7 @@ export function PastorGreetingSection({ greeting, onUpdated }: Props) {
       {/* 왼쪽: 사진 + 성함 / 오른쪽: 인사말 내용 */}
       <article className="grid gap-8 sm:grid-cols-[minmax(0,240px)_1fr] sm:gap-10">
         <div className="flex flex-col">
-          <div className="map-ripple relative overflow-hidden rounded-[20px] shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)]">
+          <RippleFrame className="rounded-[20px] shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)]">
             {photo ? (
               <img
                 src={photo}
@@ -62,8 +60,7 @@ export function PastorGreetingSection({ greeting, onUpdated }: Props) {
             ) : (
               <PhotoPlaceholder className="aspect-[3/4] w-full" />
             )}
-            <span className="map-ripple__wave" aria-hidden />
-          </div>
+          </RippleFrame>
           <div className="mt-4 text-center sm:text-left">
             <h2 className="font-serif text-xl font-semibold text-paper-text sm:text-2xl">
               {greeting.pastorName}

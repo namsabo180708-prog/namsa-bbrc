@@ -287,9 +287,13 @@ export function listToLines(list: string[]): string {
   return list.join('\n')
 }
 
-export async function getStaffMembers(): Promise<StaffMember[]> {
+/** 사역자소개·장로소개 등 인물 카드 컬렉션 공통 로더 (스키마 동일, 컬렉션·시드만 다름). */
+async function getPeopleCollection(
+  collectionName: string,
+  fallback: StaffMember[],
+): Promise<StaffMember[]> {
   const remote = await fetchCollection<StaffMember>(
-    'staffMembers',
+    collectionName,
     (id, d) => ({
       id,
       name: String(d.name ?? ''),
@@ -299,22 +303,15 @@ export async function getStaffMembers(): Promise<StaffMember[]> {
     }),
     'order',
   )
-  return (remote ?? seedStaff).sort((a, b) => a.order - b.order)
+  return (remote ?? fallback).sort((a, b) => a.order - b.order)
 }
 
-export async function getElders(): Promise<StaffMember[]> {
-  const remote = await fetchCollection<StaffMember>(
-    'elders',
-    (id, d) => ({
-      id,
-      name: String(d.name ?? ''),
-      role: String(d.role ?? ''),
-      photoUrl: String(d.photoUrl ?? ''),
-      order: Number(d.order ?? 0),
-    }),
-    'order',
-  )
-  return (remote ?? seedElders).sort((a, b) => a.order - b.order)
+export function getStaffMembers(): Promise<StaffMember[]> {
+  return getPeopleCollection('staffMembers', seedStaff)
+}
+
+export function getElders(): Promise<StaffMember[]> {
+  return getPeopleCollection('elders', seedElders)
 }
 
 export async function getEducationDepartments(): Promise<EducationDepartment[]> {

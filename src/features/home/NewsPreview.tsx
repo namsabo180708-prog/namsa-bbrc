@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import type { NewsPost } from '../../types/content'
 import { PhotoPlaceholder } from '../../components/shared/PhotoPlaceholder'
+import { RippleFrame } from '../../components/shared/RippleFrame'
 import { useAdminStore } from '../../store/admin-store'
+import { useAdminHintToast } from '../../hooks/useAdminHintToast'
 import { formatDate } from '../../lib/utils'
 
 interface Props {
@@ -12,7 +13,6 @@ interface Props {
 /** 홈 소식 — 1 featured + 최대 3 compact (동일 카드 그리드 금지) */
 export function NewsPreview({ posts }: Props) {
   const isAdminMode = useAdminStore((s) => s.isAdminMode)
-  const pushToast = useAdminStore((s) => s.pushToast)
 
   const list = posts.slice(0, 4)
   const featured = list[0]
@@ -21,10 +21,11 @@ export function NewsPreview({ posts }: Props) {
   const featuredThumb = featured?.thumbnail?.trim() ?? ''
 
   // 대표 소식 썸네일이 없으면 기본 이미지로 채우지 않고 관리자에게 등록 안내 토스트를 띄운다.
-  useEffect(() => {
-    if (!isAdminMode || !featured || featuredThumb) return
-    pushToast({ title: '대표 소식 썸네일을 등록해 주세요!', variant: 'default' })
-  }, [isAdminMode, featured, featuredThumb, pushToast])
+  useAdminHintToast(
+    Boolean(featured) && !featuredThumb,
+    '대표 소식 썸네일을 등록해 주세요!',
+    featured?.id,
+  )
 
   return (
     <section className="bg-paper-dim pt-20 pb-20 sm:pt-24 sm:pb-28">
@@ -47,15 +48,14 @@ export function NewsPreview({ posts }: Props) {
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-14">
             <Link to={`/news/${featured.id}`} className="group block min-w-0">
               {featuredThumb ? (
-                <div className="map-ripple relative aspect-[16/10] overflow-hidden rounded-[20px] bg-paper-line shadow-[0_18px_40px_-14px_rgba(90,102,96,0.45)]">
+                <RippleFrame className="aspect-[16/10] rounded-[20px] bg-paper-line shadow-[0_18px_40px_-14px_rgba(90,102,96,0.45)]">
                   <img
                     src={featuredThumb}
                     alt=""
                     className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                     loading="lazy"
                   />
-                  <span className="map-ripple__wave" aria-hidden />
-                </div>
+                </RippleFrame>
               ) : isAdminMode ? (
                 <PhotoPlaceholder className="aspect-[16/10] w-full rounded-[20px]" />
               ) : null}

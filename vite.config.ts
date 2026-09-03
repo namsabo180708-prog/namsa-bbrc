@@ -9,7 +9,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt' — 새 서비스워커는 대기만 하고, 사용자가 배너의 「새로고침」을
+      // 누를 때 updateServiceWorker(true)로 skipWaiting + reload 한다.
+      registerType: 'prompt',
       includeAssets: [
         'icons/favicon-16.png',
         'icons/favicon-32.png',
