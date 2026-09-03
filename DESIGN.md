@@ -1,215 +1,276 @@
----
-name: 대한예수교장로회 사랑하는교회
-description: 스테인드글라스·주보 색인·놋쇠 명패에서 끌어온 성소의 빛(Sanctuary Light) 시스템
-colors:
-  ink: "#17130f"
-  ink-soft: "#221b15"
-  ink-line: "#3d3428"
-  ink-muted: "#c7bea9"
-  paper: "#f1ede3"
-  paper-dim: "#e7e1d2"
-  paper-line: "#dad2be"
-  paper-text: "#1c1712"
-  paper-muted: "#5c5344"
-  gold: "#c89b3c"
-  gold-deep: "#93701f"
-  wine: "#7c2f3a"
-  wine-deep: "#5e2029"
-typography:
-  display:
-    fontFamily: "Noto Serif KR, Georgia, serif"
-    fontSize: "clamp(1.75rem, 3.5vw, 3.75rem)"
-    fontWeight: 600
-    lineHeight: 1.15
-    letterSpacing: "-0.01em"
-  body:
-    fontFamily: "Noto Sans KR, Apple SD Gothic Neo, system-ui, sans-serif"
-    fontSize: "0.9375rem"
-    fontWeight: 400
-    lineHeight: 1.6
-  label:
-    fontFamily: "Noto Sans KR, Apple SD Gothic Neo, system-ui, sans-serif"
-    fontSize: "0.75rem"
-    fontWeight: 600
-    letterSpacing: "0.14em"
-rounded:
-  sm: "2px"
-  md: "6px"
-spacing:
-  section-y: "4rem"
-  section-y-lg: "6rem"
-components:
-  button-primary:
-    backgroundColor: "{colors.gold}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.sm}"
-    padding: "0.5rem 1rem"
-  button-primary-hover:
-    backgroundColor: "{colors.gold-deep}"
-    textColor: "{colors.paper}"
-  button-secondary:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.paper}"
-    rounded: "{rounded.sm}"
+# Design System — 대한예수교장로회 남사보배로운교회
+
+> 코드가 원본(single source of truth)입니다. 토큰은 `src/index.css`,
+> 원시 컴포넌트는 `src/components/ui/*`, 공용 패턴은 `src/components/shared/*`.
+> 이 문서는 그 규칙을 사람이 읽을 수 있게 정리한 것입니다.
+
 ---
 
-# Design System: 대한예수교장로회 사랑하는교회
+## 1. 개요 — "Stone & Leaf"
 
-## Overview
+쿨 스톤(cool stone) 캔버스 + 틸 블랙 잉크(ink) + 리프 그린(leaf) 액센트.
+주보(예배 순서지)에서 온 절제된 타이포와 번호 색인의 인상을 웹으로 옮긴다.
+장식 요소를 반복하지 않고(같은 3카드 그리드 금지 등), 여백·활자 위계·한 번의
+포인트 모션으로 리듬을 만든다.
 
-**Creative North Star: "성소의 빛 (Sanctuary Light)"**
+- 활자 우선. 아이콘·썸네일·화살표를 과밀하게 늘어놓지 않는다.
+- 액센트 색(`gold`)은 "여기 한 곳"에만. 넓은 면을 칠하지 않는다.
+- 모션은 항상 `transform`/`opacity`만. `prefers-reduced-motion`에서 반드시 정지/축소.
 
-이 리디자인은 이전 버전(크림 배경 + 테라코타 악센트 + 세리프 디스플레이)이 AI 생성
-인터페이스가 가장 흔하게 수렴하는 팔레트 조합이라는 진단에서 시작했다. 대체 세계는 이
-교회의 실제 물성에서 끌어왔다: 예배당의 짙은 어스름, 스테인드글라스의 절제된 보석색
-조각, 주보(예배 순서지)의 번호 매긴 목차, 놋쇠 명패의 각인 타이포. 방문자를 설득해야
-하는 면(홈 히어로, 협력기관)은 짙은 잉크 톤(ink)을 기본 서페이스로 커밋하고, 정독이
-필요한 면(예배안내, 교회소식 본문)은 채도 낮은 회갈색 종이 톤(paper)을 쓴다 — 밝고
-따뜻한 크림 하나로 전체를 덮지 않는다는 점이 이전 버전과의 핵심적 차이다.
+---
 
-카드+아이콘+텍스트의 반복 그리드(bento), 제목 위 킥커 라벨, 숫자 원형 배지, 방사형
-블러 장식은 전부 제거했다. 대신 목차 번호(01/02/03), 헤어라인 구분선, 실제 교회 사진을
-사용한다.
+## 2. 색상 토큰
 
-**Key Characteristics:**
-- 짙은 잉크(다크) + 채도 낮은 종이(라이트)를 장면에 따라 나눠 쓰는 비대칭 톤 전략
-- 골드(촛불빛) 단일 주 악센트 + 와인(스테인드글라스 가넷) 보조 악센트, 절제된 사용
-- 아이콘 타일 카드 대신 번호 매긴 목차(색인) 레이아웃
-- 실제 교회 사진(전경·선교지·지도) 우선, 스톡 사진은 워터마크·출처 확인 후 최소 사용
-- 킥커 라벨·원형 배지·그라데이션 블러 장식 금지
+`src/index.css`의 `@theme`. Tailwind 유틸리티는 `bg-ink`, `text-gold-deep` 처럼 접두사만 붙여 쓴다.
+과거 명칭(`gold`)은 코드 호환용으로 유지하고 값만 Stone & Leaf로 교체됐다 — `gold`는 실제로 리프 그린이다.
 
-## Colors
+### Ink (딥 틸 블랙 — 헤더·푸터·다크 서피스)
+| 토큰 | 값 | 용도 |
+|---|---|---|
+| `--color-ink` | `#121816` | 헤더 바탕, 히어로 바탕, 토스트/편집칩 바탕 |
+| `--color-ink-soft` | `#1a221e` | 푸터 바탕(`.site-footer`), 다크 hover |
+| `--color-ink-line` | `#2a3530` | 다크 서피스 위 구분선·테두리 |
+| `--color-ink-muted` | `#a8b5ae` | 다크 서피스 위 보조 텍스트 |
 
-전체 팔레트는 스테인드글라스 조각처럼 절제되게 커밋한다 — 골드/와인은 면적을 넓게
-차지하지 않고 룰선·숫자·라벨·CTA에만 등장한다.
+### Paper (쿨 스톤 — 본문 캔버스)
+| 토큰 | 값 | 용도 |
+|---|---|---|
+| `--color-paper` | `#eef1ef` | 기본 페이지 바탕(`body`) |
+| `--color-paper-dim` | `#e4e8e5` | 한 단계 낮춘 섹션·카드·플레이스홀더 바탕, hover 회색 |
+| `--color-paper-line` | `#cfd6d2` | 라이트 서피스 구분선·테두리 |
+| `--color-paper-text` | `#141a17` | 본문 텍스트 |
+| `--color-paper-muted` | `#5a6660` | 보조 텍스트, 날짜, 캡션 |
 
-### Primary
-- **Ink** (`#17130f`): 헤더·푸터·히어로·협력기관 섹션의 기본 다크 서페이스. "예배당의 어스름".
-- **Gold (Candlelight)** (`#c89b3c`): 유일한 주 악센트. CTA 버튼, 활성 탭 밑줄, 목차 번호,
-  포커스 링. `gold-deep` (`#93701f`)는 밝은 배경 위 텍스트/링크용 저채도 변형.
+### Accent
+| 토큰 | 값 | 용도 |
+|---|---|---|
+| `--color-gold` | `#3f6f54` | 리프 그린. 기본 버튼 바탕, 활성 탭, 언더라인, 셀렉션, 포커스 링 |
+| `--color-gold-deep` | `#2a4d3a` | hover 심화, 링크, index-num, eyebrow 라벨 |
+| `--color-wine` | `#6b3a42` | 파괴적 액션(삭제) 테두리/바탕 |
+| `--color-wine-deep` | `#4e2a31` | 파괴적 액션 텍스트 |
 
-### Secondary
-- **Wine (Stained-glass Garnet)** (`#7c2f3a`): 삭제·경고 등 위험 동작에 한정. `wine-deep`
-  (`#5e2029`)는 밝은 배경 위 텍스트용.
+### 규칙
+- 액센트는 점(dot)으로만. `bg-gold`로 넓은 면을 칠하는 건 기본 버튼과 활성 탭 알약뿐.
+- 다크 서피스 위 텍스트 = `text-paper` / `text-paper/80`(보조) / `text-ink-muted`(더 약하게). `text-gold`는 `#3f6f54`라 다크 위에서 대비가 약하다 — 다크 바탕에선 쓰지 않는다.
+- 삭제 등 파괴적 버튼: `border-wine/30 bg-wine/10 text-wine-deep hover:bg-wine/20`.
 
-### Neutral
-- **Paper (Bulletin Stock)** (`#f1ede3`): 정독형 콘텐츠(예배안내, 교회소식, 오시는길)의
-  기본 배경. 채도를 낮춘 회갈색 종이 톤 — 이전 버전의 크림(#faf6f0)과 의도적으로 구분.
-- **Paper Dim** (`#e7e1d2`): paper 위 패널/스트라이프 구분용 미세 톤.
-- **Paper Line** (`#dad2be`): paper 위 헤어라인 보더·구분선.
-- **Paper Text** (`#1c1712`) / **Paper Muted** (`#5c5344`): paper 위 본문/보조 텍스트.
-- **Ink Line** (`#3d3428`): ink 위 헤어라인 보더.
-- **Ink Muted** (`#c7bea9`): ink 위 보조 텍스트.
+---
 
-### Named Rules
-**The Two-Ground Rule.** 방문자를 설득/환영하는 면(히어로, 협력기관, 헤더, 푸터)은
-ink를 기본 서페이스로 쓰고, 과업 수행형 정독 콘텐츠는 paper를 쓴다. 한 페이지 안에서
-두 톤을 그러데이션 없이 섹션 단위로 전환한다.
+## 3. 타이포그래피
 
-**The One-Accent Rule.** 골드는 화면의 10% 미만에만 등장한다 — 룰선, 숫자, CTA, 활성
-상태 표시자뿐. 카드 배경이나 넓은 면을 채우지 않는다.
+| | 폰트 | 스택 |
+|---|---|---|
+| 제목/강조 | `font-serif` | `'Noto Serif KR', 'Georgia', serif` |
+| 본문/UI | `font-sans` (기본) | `'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif` |
 
-## Typography
+웹폰트는 `index.html`에서 `Noto Sans KR 400/500/600/700`, `Noto Serif KR 500/600/700`을 `display=swap`으로 로드.
 
-**Display Font:** Noto Serif KR (Georgia 폴백)
-**Body/UI Font:** Noto Sans KR (Apple SD Gothic Neo, system-ui 폴백)
+### 위계 (실사용 스케일)
+| 역할 | 클래스 |
+|---|---|
+| 페이지 타이틀(H1, PageShell) | `font-serif text-3xl font-semibold tracking-tight sm:text-[2.75rem]` |
+| 히어로 headline | `font-serif text-4xl font-semibold leading-[1.15] tracking-tight sm:text-5xl lg:text-6xl` |
+| 섹션 제목(H2) | `font-serif text-2xl font-semibold tracking-tight sm:text-3xl` |
+| 카드 제목(H3) | `font-serif text-lg font-semibold` (큰 카드는 `text-2xl sm:text-[1.65rem]`) |
+| pull-quote | `font-serif text-2xl font-medium leading-snug tracking-tight sm:text-[1.75rem]` |
+| eyebrow 라벨 | `index-num text-xs font-semibold tracking-[0.14em] text-gold-deep` |
+| 본문 | `text-base leading-relaxed text-paper-muted sm:text-[1.05rem] sm:leading-7` |
+| 보조/날짜/캡션 | `text-xs`~`text-sm text-paper-muted` |
 
-**Character:** 디스플레이는 크고 절제된 세리프로 확신 있게 커밋하고(1.75rem~3.75rem,
-weight 600), 본문/UI는 차분한 산세리프로 가독성을 우선한다. 라벨·목차 번호는 좁은
-크기에 넓은 트래킹(0.14em)을 줘 "인쇄물 색인"의 느낌을 낸다.
+### 명명 규칙
+- **`.index-num`** — 주보의 찬송 번호 감성. `font-variant-numeric: tabular-nums; letter-spacing: 0.02em`. 연도·우편번호·eyebrow 숫자에 사용.
+- 제목은 거의 항상 `font-serif` + `tracking-tight`. 본문/버튼/라벨은 sans.
+- 대비는 굵기와 색으로. 크기 점프를 남발하지 않는다.
 
-### Hierarchy
-- **Display** (weight 600, `clamp(1.75rem, 3.5vw, 3.75rem)`, line-height 1.15): 히어로
-  헤드라인, 페이지 타이틀(PageShell h1).
-- **Title** (weight 600, 1.25–1.75rem, Noto Serif KR): 섹션 헤딩(h2), 카드 제목.
-- **Body** (weight 400, 0.875–0.9375rem, line-height 1.6, Noto Sans KR): 본문, 목록.
-- **Label / Index Numeral** (weight 600, 0.6875–0.75rem, letter-spacing 0.14em,
-  `.index-num` 유틸리티로 tabular-nums 적용): 목차 번호, 카테고리 라벨.
+---
 
-### Named Rules
-**The No-Kicker Rule.** 제목 위에 작은 라벨(eyebrow/kicker)을 얹지 않는다 — 제목 자체가
-무게를 지닌다. `index-num` 라벨은 목차/카테고리 맥락에서만 쓰고, 제목의 장식으로 쓰지
-않는다.
+## 4. 레이아웃 & 간격
 
-## Layout
+- **콘텐츠 폭**: `mx-auto max-w-6xl px-4 sm:px-6` (72rem). 거의 모든 섹션·셸이 이 컨테이너.
+- **내부 페이지 셸**(`PageShell`): `py-10 sm:py-14`, 헤더 블록은 `mb-10 border-b border-paper-line pb-8`, 우측 상단에 `Breadcrumb`.
+- **홈 섹션 리듬 — "A"**: 인접 섹션 사이 `margin`은 두지 않는다. **아래쪽 섹션이 `pt`로 간격을 소유**한다(히어로→인사말이 이 방식). 표준값:
+  - `pt-20`(80px, 모바일) / `sm:pt-24`(96px, ≥640px) = **"A"**
+  - 섹션 콘텐츠 자체 여백은 `py-16 sm:py-20`(협력기관) ~ `py-20 sm:py-28`(교회소식 하단) 범위.
+- **반응형 기준**: `sm` 640 / `md` 768 / `lg` 1024. 카드 그리드는 `sm:grid-cols-2` → `lg:grid-cols-4`(사역자) 또는 `lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]`(비대칭 스플릿).
+- 비대칭 스플릿을 선호: 인사말 `md:grid-cols-[7fr_3fr]`, 교육 `md:grid-cols-3` + `md:col-span-2` 이미지.
 
-`max-w-6xl`(72rem) 컨테이너, 좌우 패딩 `px-4 sm:px-6`. 섹션 세로 리듬은 `py-16
-sm:py-24`(홈 섹션)로 넉넉하게 — 제목 위 여백이 아래 여백보다 크다. 카드 그리드
-(뉴스·사역·사역자)는 균일 3열 대신 콘텐츠 성격에 따라 2/3/4열을 섞어 쓰고, 홈 하단
-"찾아가기"는 그리드가 아닌 번호 매긴 세로 목록(색인)으로 구성한다. 모바일은 전부 1열
-스택, 탭은 가로 스크롤 없이 줄바꿈.
+---
 
-## Elevation & Depth
+## 5. 형태 · 깊이 (radius / elevation)
 
-그림자를 쓰지 않는다. 깊이는 헤어라인 보더(`border-paper-line` / `border-ink-line`)와
-톤 대비(ink ↔ paper 섹션 전환)로 표현한다. 유일한 예외는 모달(Dialog)의
-`shadow-2xl`과 팝업의 `shadow-xl` — 실제 오버레이 레이어를 배경과 분리하기 위한
-구조적 용도에 한정.
+### Radius
+| 값 | 용도 |
+|---|---|
+| `rounded-sm` | 버튼, 입력, 다이얼로그 본체, 토스트, 편집칩 |
+| `rounded-[14px]` | 내부 카드(연락처 필드, 협력기관 카드, 관리 목록 행) |
+| `rounded-[20px]` | **대표 이미지 프레임**(`RippleFrame`), `EditableBlock` 안내 오버레이 |
+| `rounded-full` | 세그먼트 탭 트랙·알약, eyebrow 뱃지, 인디케이터 dot |
 
-### Named Rules
-**The Flat-By-Default Rule.** 카드·리스트·이미지는 평면이다. `shadow-sm`류의 장식적
-소프트 섀도를 카드에 두르지 않는다 — 헤어라인 보더가 경계를 대신한다.
+### Elevation
+그림자는 절제. 팝오버/토스트/다이얼로그에만 강한 그림자, 그 외엔 테두리(`border-paper-line`)로 면을 나눈다.
+- 다이얼로그: `shadow-2xl` · 토스트/팝업: `shadow-xl` · 툴팁: `shadow-lg` · BackToTop: `shadow-lg`
+- **떠 있는 대표 이미지**: `shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)]` (잉크 톤, About·교육·선교·인사말) / `shadow-[0_18px_40px_-14px_rgba(90,102,96,0.45)]` (회색 톤, 교회소식)
 
-## Shapes
+---
 
-모서리 반경은 거의 0에 가깝게 절제한다 — 버튼/입력은 `rounded-sm`(2px), 다이얼로그만
-소폭의 `rounded-sm`~`rounded-xl` 범위. 사진·카드는 각진 사각형(no rounding)을 기본으로
-하여 "인쇄물"의 느낌을 유지한다. 예외는 의도적으로 고른 곳에만 둔다: 로고 마크는 원형,
-협력기관 로고 플레이트(`PartnerSpotlightRail`)는 `rounded-[30px]`의 부드러운 사각형,
-슬라이드 인디케이터는 필(pill) 형태. 호버/선택 시 플레이트만 카드별 진한 파스텔로
-전환한다(총회 라일락 `#c4b5d4`, 남경기노회 세이지 `#a8c0a8`, GMS 살구 `#d4b59a`) —
-비활성은 paper, 이웃 카드는 scale/레이아웃을 바꾸지 않는다.
+## 6. 모션
 
-## Components
+- **원칙**: `transform` / `opacity` / `background-position`만. compositor에서 처리되게. 모든 시그니처 모션은 `@media (prefers-reduced-motion: reduce)`에서 정지 또는 즉시 상태.
+- **duration**: 마이크로 200–300ms · 리빌/프레임 500–700ms · 툴팁 130–170ms · 모바일 메뉴 200–240ms.
+- **easing**: `ease-out` 기본 · 펼침 `cubic-bezier(0.16,1,0.3,1)` · 세그먼트 언더라인 `cubic-bezier(0.22,1,0.36,1)`.
 
-### Buttons
-- **Shape:** `rounded-sm`(2px), `tracking-wide`.
-- **Primary:** 배경 gold, 텍스트 ink → hover 시 배경 gold-deep, 텍스트 paper.
-- **Secondary:** 배경 ink, 텍스트 paper → hover ink-soft.
-- **Outline:** 보더 paper-line, hover 시 보더 gold-deep/50 + 배경 paper-dim.
-- **Ghost / Link:** 배경 없음, 텍스트 gold-deep, hover underline.
+### 시그니처 애니메이션 (`src/index.css`)
+| 이름 | 무엇 | 어디에 |
+|---|---|---|
+| **`.map-ripple` + `.map-ripple__wave`** | 컨테이너 중앙에서 바깥으로 흰색 링 3개(`::before`·`::after`·`.wave`)가 0.8s 시차로 `scale(0.15)→scale(5)`·페이드, hover 시 무한 반복 | 오시는길 약도, 그리고 `RippleFrame`을 통해 교회소개·인사말·장로/사역자·교육·선교·교회소식 대표 이미지 |
+| **`.seg-pill`** | 세그먼트 탭 알약 hover/focus 시 그린 언더라인이 왼쪽에서 `scaleX` 펼쳐지고, 머무는 동안 밝은 점이 라인을 따라 흐름 | 세그먼트형 탭, 교회소식 분류 |
+| `mobile-menu-unfurl` / `mobile-menu-rollup` | `transform-origin: top` + `scaleY`로 펼쳐지고 말려 올라감 | 헤더 모바일 햄버거 메뉴 |
+| **`Reveal`** (컴포넌트) | 뷰포트 인뷰 시 1회 `opacity 0→1` + `translateY(20px→0)` 700ms. `stagger delay` 지원 | About/교육/선교 패널, 홈 콘텐츠 섹션(히어로·푸터 제외) |
+| 히어로 패럴랙스 | 배경 미디어를 스크롤량 × 0.3 만큼 아래로 되돌려 (1−0.3) 속도로 따라오게 함 | `HeroSlider` |
+| 네비 언더라인 | `scale-x-0 → scale-x-100` 그린 밑줄 | 헤더/푸터 링크, underline형 탭 |
+| 골드 헤어라인 프레임 | hover 시 `inset-2` 골드 테두리가 `scale`+`opacity`로 번짐 (`z-20`) | 사역자소개·선교 카드 (물결과 겹쳐 사용) |
 
-### Tabs
-- **Style:** 언더라인 인덱스 바 — `border-b border-paper-line` 컨테이너, 활성 탭은
-  `border-b-2 border-gold text-paper-text`. 세그먼트 필(pill)이 아니다.
+---
 
-### Cards / Panels
-- **Corner Style:** 각짐(no radius) 또는 최소.
-- **Background:** paper 또는 paper-dim.
-- **Border:** `border-paper-line` 헤어라인, 카드 사이는 보더보다 `divide-paper-line`
-  구분선을 우선.
-- **Shadow:** 없음(Elevation 참고).
+## 7. 컴포넌트
 
-### Inputs / Fields
-- **Style:** `border-paper-line`, 배경 paper, `rounded-sm`.
-- **Focus:** `ring-2 ring-gold/40`.
+### 버튼 (`components/ui/button.tsx`, cva)
+기본형: `inline-flex items-center gap-2 rounded-sm text-sm font-medium tracking-wide` + `focus-visible:ring-2 ring-gold/50`.
 
-### Index List (Signature Component)
-홈 "찾아가기"(`QuickIndex`)와 예배 시간표(`WorshipScheduleList`)가 공유하는 시그니처
-패턴: 좌측에 `index-num`(01, 02…) 세리프 숫자, 실제 사진 스와치(색인일 때만),
-타이포 위계, 우측 화살표/시간. `divide-paper-line`로 구분된 세로 리스트이며 아이콘
-타일 그리드를 쓰지 않는다.
+| variant | 스타일 |
+|---|---|
+| `default` | `bg-gold text-ink hover:bg-gold-deep hover:text-paper` |
+| `secondary` | `bg-ink text-paper hover:bg-ink-soft` |
+| `outline` | `border border-paper-line text-paper-text hover:border-gold-deep/50 hover:bg-paper-dim` |
+| `ghost` | `text-paper-text hover:bg-paper-dim` |
+| `link` | `text-gold-deep underline-offset-4 hover:underline` |
 
-### Navigation
-헤더는 ink 배경 고정 바. 데스크톱 내비는 소문자가 아닌 원문 라벨 + 좁은 트래킹
-(0.06em), 활성 상태는 필 배경이 아닌 하단 골드 언더라인. 모바일은 ink 배경 드롭다운,
-활성 항목만 `bg-ink-soft text-gold`.
+size: `default h-10 px-4` · `sm h-8 px-3 text-xs` · `lg h-11 px-8` · `icon h-10 w-10`.
 
-## Do's and Don'ts
+### 탭 (`components/ui/tabs.tsx`, Radix)
+- **`underline`**(기본): `border-b border-paper-line` 트랙, 트리거는 `text-paper-muted`, 활성/hover 시 `bg-gold` 밑줄이 `scale-x`.
+- **`segmented`**: `rounded-full border border-paper-line bg-paper-dim/70 p-1.5` 트랙 안의 `rounded-full` 알약. 활성 = `bg-gold text-paper shadow-sm`. hover는 `.seg-pill` 언더라인 흐름. 항목이 많으면(교육부서) 트랙 내부 가로 스크롤만(`no-scrollbar overflow-x-auto`). **오시는길·교회소개·교육부서·선교사역이 segmented 사용.**
+- URL은 탭 전환에 바뀌지 않는다(state 기반).
 
-### Do:
-- **Do** 방문자용(Persuade) 섹션은 ink를 기본으로, 정독형 콘텐츠는 paper를 기본으로
-  커밋한다.
-- **Do** 목차 번호(`index-num`, tabular-nums)로 리스트 항목을 센다 — 원형 배지가 아니다.
-- **Do** 실제 교회 사진을 쓰되, 사용 전 워터마크·출처를 육안으로 확인한다(스톡 사이트
-  워터마크가 있으면 즉시 폐기).
-- **Do** 헤어라인 보더(`paper-line` / `ink-line`)로 카드·구역을 구분한다.
+### 카드 / 패널
+- 라이트 카드: `rounded-[14px]`(또는 `[20px]`) `border border-paper-line bg-paper` / 낮춘 톤은 `bg-paper-dim`.
+- 리스트 행: `border-t border-paper-line` 구분 + 큰 터치 타깃(`min-h-16`~`min-h-24`, `py-5`).
+- 같은 3카드 균등 그리드 반복 금지 — featured 1 + 목록 N, 비대칭 스플릿 등으로 변주.
 
-### Don't:
-- **Don't** 카드에 소프트 드롭섀도(`shadow-sm`/`shadow-md`)를 두르지 않는다 — 보더로
-  대체한다.
-- **Don't** 제목 위에 킥커/eyebrow 라벨을 얹지 않는다.
-- **Don't** 아이콘+제목+텍스트의 균일 카드 그리드(bento)를 새 섹션에 재도입하지 않는다.
-- **Don't** 사진을 대신해 방사형 그라데이션 블러 장식을 쓰지 않는다.
-- **Don't** 실사용 로고(파트너 기관 등)에 `brightness-0 invert` 같은 단색화 필터를
-  걸지 않는다 — 밝은 플레이트(`bg-paper`) 배경 위에 원본 색상 그대로 올린다.
+### 입력 / 필드
+- `Input`: `h-10 rounded-sm border border-paper-line bg-paper px-3 text-sm` + `focus-visible:ring-2 ring-gold/40`.
+- `FormField`: 라벨 + `required` 표시 + `hint`. 힌트는 상태 인지형(사진 있음/없음에 따라 문구 전환).
+- `MediaInputField`: 로컬 파일 픽커 + URL 붙여넣기 듀얼 입력. "비우면 현재 유지" 정책.
+
+### 다이얼로그 / 토스트 / 툴팁 (Radix)
+- `DialogContent`: `w-[min(92vw,32rem)] max-h-[min(90dvh,90vh)] rounded-sm border border-paper-line bg-paper shadow-2xl`. 상단 `3px` 골드 바. 오버레이 `bg-ink/70`.
+- 토스트(`ToastViewport`): `fixed bottom-4 right-4 z-[100] w-[min(92vw,22rem)]`. 항상 `bg-ink` + variant별 테두리/텍스트 색(success 에메랄드 / error 와인 / default paper).
+- 삭제 확인은 `window.confirm`이 아니라 중첩 `Dialog` 모달.
+
+### 시그니처 컴포넌트
+- **Index List (`QuickIndex` 등)** — 번호·썸네일·화살표를 뺀 2열 텍스트 색인. `border-t` 행 + `font-serif` 라벨 + `text-paper-muted` 설명 + hover 시 우측에 라이브 정보(`item.live()`).
+- **`RippleFrame`** (`components/shared/RippleFrame.tsx`) — `map-ripple relative overflow-hidden` + `.map-ripple__wave` 자식을 제공하는 이미지 프레임. 크기·`rounded-[20px]`·`shadow-[…]`는 `className`으로 전달. `as="div" | "article"`.
+- **`PhotoPlaceholder`** — 사진 미등록 자리. `bg-paper-dim` + `ImagePlus` 아이콘 + "사진파일을 업로드하세요". 기본/시드 이미지로 폴백하지 않는 정책의 시각적 표현.
+- **`EditableBlock`** — 관리자 모드에서만 우상단 `편집` 칩(잉크 바탕) + hover/tap 안내 오버레이. 클릭 시 편집 다이얼로그.
+
+---
+
+## 8. 관리자 편집 UX
+
+- 편집 진입은 항상 `EditableBlock`의 우상단 `편집` 칩 → 다이얼로그. 저장 = "게시"(Firestore 반영).
+- **기본 이미지 폴백 금지**: 히어로 배경, 담임목사·사역자·장로 사진, 교육 대표사진, 인사말 사진, 교회소식 썸네일은 미설정 시 시드/기본 이미지를 넣지 않는다. 대신:
+  - 화면: 빈 상태(`PhotoPlaceholder`) 또는 빈 다크 히어로
+  - 관리자에게: **`useAdminHintToast`** 로 "…를 저장해 주세요!" 안내 토스트 (관리자 모드에서만, 슬라이드/항목 전환 시 재알림)
+- 항목 추가(슬라이드/부서/사역자/장로) 시에도 같은 안내 토스트.
+- 파괴적 액션(삭제)은 와인 색 + 확인 모달. 기본 부서 등 삭제 불가 항목은 명시.
+
+---
+
+## 9. 홈 페이지 섹션 스택
+
+| 순서 | 섹션 | 바탕 | 비고 |
+|---|---|---|---|
+| 1 | Hero (`HeroSlider`) | `bg-ink` | `h-[100svh]`, 헤더 뒤로 파고듦(`-marginTop: var(--header-h)`), 배경 미디어 `object-cover` + 패럴랙스. **Reveal 미적용** |
+| 2 | 담임목사 인사말 · 연간 표어 (`GreetingMottoBand`) | `bg-paper` (`pt`만, "A") | 1×2 그리드 `md:grid-cols-[7fr_3fr]` — 좌 인사말 카드(`bg-paper`) / 우 표어 카드(`bg-paper-dim`). Reveal |
+| 3 | 교회소식 (`NewsPreview`) | `bg-paper-dim` | featured 1(대표 이미지 = `RippleFrame` 회색 그림자) + 최대 3 목록. Reveal |
+| 4 | 찾아가기 (`QuickIndex`) | `bg-paper` + 고정 배경 이미지 | `bg-[url(/logo-image/webp/cup-image.webp)] bg-cover bg-center` + `md:bg-fixed`(모바일은 scroll), `bg-paper/60` 오버레이. Reveal은 `bg-fixed` 때문에 **섹션 내부 콘텐츠**에만 적용 |
+| 5 | 협력기관 (`PartnerSpotlightRail`) | `bg-paper-dim` + `border-t border-paper-line` | 라이트 카드 3열, 텍스트 중앙정렬, hover `bg-paper-line/50`. Reveal |
+| — | Footer | `#1a221e` (`.site-footer`, `!important`) | **Reveal 미적용** |
+
+- 협력기관을 라이트로 둔 이유: 바로 아래 다크 Footer와 명확히 대비시켜 경계 가독성 확보.
+
+---
+
+## 10. 히어로 (`HeroSlider`)
+
+- `<section className="h-[100svh] min-h-[520px] overflow-hidden bg-ink">`. `svh`로 모바일 툴바 스크롤 튐 방지.
+- 배경 미디어(`HeroMediaBackground`): 이미지/mp4/유튜브. `object-cover`. **미설정 시 폴백 없음** → 빈 다크 + 관리자 토스트.
+- 상단으로 `bg-gradient-to-t from-ink … to-transparent` 스크림 → 하단 정렬 카피 가독성.
+- 패럴랙스: 배경 래퍼를 `translate3d(0, scrollY*0.3, 0)`(rAF 스로틀, `[0, innerHeight]` 클램프). reduced-motion 시 미적용.
+- 카피 진입: `translate-y-3 opacity-0 → 0/100`, 태그·제목·부제·CTA 순으로 stagger.
+- 인디케이터: 필(pill) dot, 활성 `w-6 bg-gold`.
+
+---
+
+## 11. 헤더 / 푸터
+
+### Header
+- `sticky top-0 z-40`. `/`(홈) 최상단에선 **투명 오버레이**(스크롤 40px 넘으면 `bg-ink`로 전환), 그 외 페이지는 항상 `bg-ink`.
+- 실제 높이를 `ResizeObserver`로 실측해 `--header-h`(CSS 변수)로 퍼블리시 → 히어로가 그만큼 음수 마진으로 파고든다.
+- 로고: `siteSettings.logoUrl` 우선, 없으면 `DEFAULT_LOGO_SRC`. 관리자 모드에서 로고 옆 `LogoEditDialog`.
+- 하단 스트립: "교회설립 제 N주년 · Since YYYY–현재" (관리자는 연도 편집 버튼).
+- 모바일: `rounded-lg border border-ink-line bg-ink-soft` 드롭다운, unfurl/rollup 애니메이션.
+
+### Footer
+- `.site-footer` = `#1a221e` + `border-top #2a3530` (CSS `!important`로 강제).
+- 2열: 좌(로고 + 주소/Tel/Fax/Web + © + Email + 비관리자용 `Admin` 링크) / 우(Quick Link 뱃지 + 바로가기 6개).
+- 주소/연락처는 `contactInfo/main` Firestore 문서를 편집 대상으로 하며 `EditableBlock`으로 감싼다.
+- 링크 hover: 헤더와 동일한 `scale-x` 그린 언더바.
+
+---
+
+## 12. 아이콘 · 이미지
+
+- 아이콘: **`lucide-react`** 만. 기본 `h-4 w-4`(버튼 내), 강조 `h-8 w-8`. `aria-hidden` 붙이고 의미는 텍스트로.
+- 대표 이미지 비율: 가로형 `aspect-[16/10]`, 인물 `aspect-[3/4]`.
+- 대표 이미지 공통 처리 = **`RippleFrame`**: `rounded-[20px]` + 떠 있는 그림자 + hover 원형 물결. 이미지 자체는 `object-cover` 풀컬러(흑백→컬러 hover 없음), `loading="lazy"`.
+- 콘텐츠 이미지는 Firebase Storage 업로드분. 프리캐시하지 않고 hosting 1년 immutable 캐시에 의존.
+
+---
+
+## 13. PWA
+
+- `vite-plugin-pwa`, `registerType: 'prompt'`.
+- 서비스워커 등록·업데이트 감지는 `<PwaUpdatePrompt />`(`useRegisterSW`).
+- 새 버전 대기 시 좌하단 배너: "새 버전이 준비되었습니다" + `[나중에]` `[새로고침]`. 새로고침 = `updateServiceWorker(true)`(skipWaiting + reload). 1시간마다 `registration.update()` 폴링.
+- 매니페스트: standalone, `theme_color #3f6f54`, `background_color #eef1ef`, 아이콘 32/48/192/512/512-maskable(`public/icons/`).
+- 워크박스: 앱 셸(JS/CSS/HTML)만 프리캐시, `navigateFallback: /index.html`.
+
+---
+
+## 14. 접근성
+
+- 포커스: 전역 `:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px }` + 컴포넌트별 `ring-gold/40~50`.
+- 터치 타깃 최소 44px(`min-h-11` / `min-h-16`).
+- 모든 시그니처 모션에 `prefers-reduced-motion` 대응.
+- 캐러셀: `aria-roledescription="carousel"`, `role="tablist"` 인디케이터, `aria-live` 상태 안내. 관리자 모드·hover·focus 시 자동 회전 정지.
+- 장식용 이미지/오버레이는 `aria-hidden`, 의미 있는 이미지는 `alt`.
+
+---
+
+## 15. Do / Don't
+
+**Do**
+- `max-w-6xl` 컨테이너와 섹션 `pt` 리듬("A")을 지킨다.
+- 제목은 `font-serif` + `tracking-tight`, 숫자는 `.index-num`.
+- 대표 이미지는 `RippleFrame`으로 통일, 빈 자리는 `PhotoPlaceholder` + 관리자 토스트.
+- 액센트(`gold`)는 한 화면에 한 포인트.
+- 새 모션은 `transform`/`opacity`로만, reduced-motion 분기 필수.
+
+**Don't**
+- 기본/시드 이미지로 폴백하지 않는다(히어로·인물·썸네일 전부).
+- 다크 서피스 위에 `text-gold`(대비 부족) — `text-paper` 계열을 쓴다.
+- 같은 3카드 균등 그리드를 섹션마다 반복하지 않는다.
+- 넓은 면을 `bg-gold`로 칠하지 않는다(기본 버튼·활성 탭 알약 예외).
+- `window.confirm` 대신 모달로 확인받는다.
+- `background-attachment: fixed` 요소의 조상에 `transform`(예: `Reveal`)을 두지 않는다 — 내부 콘텐츠에만 적용.

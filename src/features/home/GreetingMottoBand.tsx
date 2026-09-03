@@ -14,7 +14,7 @@ interface Props {
  */
 export function GreetingMottoBand({ greeting, motto, onUpdated }: Props) {
   return (
-    <section className="bg-paper pt-20 sm:pt-24">
+    <section className="bg-paper pt-20 pb-16 sm:pt-24 sm:pb-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="grid gap-8 md:grid-cols-[7fr_3fr] md:items-stretch lg:gap-12">
           <div className="rounded-[20px] border border-paper-line bg-paper p-7 sm:p-9">

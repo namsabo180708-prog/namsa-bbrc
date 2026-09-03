@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { SITE_NAME, DEFAULT_LOGO_SRC } from '../../types/content'
 import type { ContactInfo } from '../../types/content'
 import { useAdminStore } from '../../store/admin-store'
@@ -90,11 +90,13 @@ export function Footer() {
           <div className="flex min-w-0 flex-col">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-10">
               <div className="flex shrink-0 items-start gap-2">
-                <img
-                  src={logoUrl || DEFAULT_LOGO_SRC}
-                  alt={SITE_NAME}
-                  className="h-12 w-auto shrink-0 sm:h-14"
-                />
+                <Link to="/" aria-label={`${SITE_NAME} 홈`} className="shrink-0">
+                  <img
+                    src={logoUrl || DEFAULT_LOGO_SRC}
+                    alt={SITE_NAME}
+                    className="h-12 w-auto shrink-0 transition-opacity duration-200 hover:opacity-80 sm:h-14"
+                  />
+                </Link>
                 {isAdminMode ? (
                   <LogoEditDialog currentLogoUrl={logoUrl} onSaved={setLogoUrl} />
                 ) : null}
