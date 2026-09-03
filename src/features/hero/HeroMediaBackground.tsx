@@ -1,30 +1,24 @@
 import { useEffect, useState } from 'react'
 import type { HeroSlide } from '../../types/content'
 import { resolveMediaKind, toYoutubeEmbedUrl } from '../../lib/media'
-import { seedHeroSlides } from '../../data/seed'
-
-const FALLBACK_IMAGE = seedHeroSlides[0]!.mediaUrl
 
 export function HeroMediaBackground({ slide }: { slide: HeroSlide }) {
-  const url = slide.mediaUrl?.trim() || FALLBACK_IMAGE
-  const kind = resolveMediaKind(url, slide.mediaType)
+  const url = slide.mediaUrl?.trim() ?? ''
   const [imgFailed, setImgFailed] = useState(false)
 
   useEffect(() => {
     setImgFailed(false)
   }, [url, slide.id])
 
+  // 배경 미디어가 설정되지 않았거나 로드에 실패하면 기본 이미지로 폴백하지 않고
+  // 빈 화면(섹션 bg-ink)만 보여준다. 안내는 HeroSlider에서 토스트로 처리한다.
+  if (!url || imgFailed) return null
+
+  const kind = resolveMediaKind(url, slide.mediaType)
+
   if (kind === 'youtube') {
     const embed = toYoutubeEmbedUrl(url)
-    if (!embed) {
-      return (
-        <img
-          src={FALLBACK_IMAGE}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      )
-    }
+    if (!embed) return null
     return (
       <div className="absolute inset-0 overflow-hidden bg-ink">
         <iframe
@@ -57,11 +51,10 @@ export function HeroMediaBackground({ slide }: { slide: HeroSlide }) {
     )
   }
 
-  const src = imgFailed ? FALLBACK_IMAGE : url
   return (
     <img
-      key={slide.id + src}
-      src={src}
+      key={slide.id + url}
+      src={url}
       alt={slide.title}
       className="absolute inset-0 h-full w-full object-cover"
       fetchPriority="high"
@@ -69,5 +62,3 @@ export function HeroMediaBackground({ slide }: { slide: HeroSlide }) {
     />
   )
 }
-
-export { FALLBACK_IMAGE }

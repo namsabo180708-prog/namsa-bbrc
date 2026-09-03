@@ -69,8 +69,8 @@ export function HeroManagePanel({ slides, onUpdated }: Props) {
       })
       pushToast({
         title: '새 슬라이드가 추가되었습니다',
-        description: '목록에서 「편집」을 눌러 내용을 입력해 주세요.',
-        variant: 'success',
+        description: '「편집」을 눌러 슬라이드 이미지를 저장해 주세요!',
+        variant: 'default',
       })
       onUpdated()
     } catch (err) {
@@ -257,7 +257,7 @@ export function HeroManagePanel({ slides, onUpdated }: Props) {
           <DialogHeader>
             <DialogTitle>{editingSlide?.title || '슬라이드'} 편집</DialogTitle>
             <DialogDescription>
-              저장 후 미리보기 → 게시 흐름으로 Firestore에 반영됩니다.
+              「게시」를 누르면 Firestore에 저장되어 즉시 반영됩니다.
             </DialogDescription>
           </DialogHeader>
           {editingSlide ? (

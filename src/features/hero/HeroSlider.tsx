@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, Settings } from 'lucide-react'
 import type { HeroSlide } from '../../types/content'
 import { useAdminStore } from '../../store/admin-store'
@@ -18,6 +18,7 @@ export function HeroSlider({ slides }: HeroSliderProps) {
   const [paused, setPaused] = useState(false)
   const reducedMotion = usePrefersReducedMotion()
   const isAdminMode = useAdminStore((s) => s.isAdminMode)
+  const pushToast = useAdminStore((s) => s.pushToast)
   const list = slides.length > 0 ? slides : seedHeroSlides
   const count = list.length
 
@@ -53,6 +54,46 @@ export function HeroSlider({ slides }: HeroSliderProps) {
 
   const current = list[index] ?? seedHeroSlides[0]!
   const go = (dir: -1 | 1) => setIndex((i) => (i + dir + count) % count)
+
+  // 배경 미디어가 비어 있는 슬라이드를 관리자가 볼 때 저장 안내 토스트를 띄운다.
+  const currentHasMedia = Boolean(current.mediaUrl?.trim())
+  useEffect(() => {
+    if (!isAdminMode || currentHasMedia) return
+    pushToast({ title: '슬라이드 이미지를 저장해 주세요!', variant: 'default' })
+  }, [isAdminMode, currentHasMedia, current.id, pushToast])
+
+  /**
+   * 배경 미디어 패럴랙스 — 페이지가 s px 스크롤되면 섹션은 s만큼 위로 이동하고,
+   * 배경은 s * FACTOR 만큼 아래로 되돌려 결과적으로 (1 - FACTOR) 속도로만 따라온다.
+   * 노출되는 상단 여백은 항상 뷰포트 위쪽(음수 좌표)이라 보이지 않는다.
+   */
+  const mediaWrapRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    const el = mediaWrapRef.current
+    if (!el) return
+    if (reducedMotion) {
+      el.style.transform = ''
+      return
+    }
+    const FACTOR = 0.3
+    let raf = 0
+    const apply = () => {
+      raf = 0
+      const s = Math.min(Math.max(window.scrollY, 0), window.innerHeight)
+      el.style.transform = `translate3d(0, ${(s * FACTOR).toFixed(1)}px, 0)`
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(apply)
+    }
+    apply()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    return () => {
+      if (raf) cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [reducedMotion])
 
   const goToManagePanel = () => {
     document.getElementById(HERO_MANAGE_PANEL_ID)?.scrollIntoView({
@@ -102,11 +143,13 @@ export function HeroSlider({ slides }: HeroSliderProps) {
       ) : null}
 
       <section
-        className="relative h-[min(92vh,900px)] min-h-[560px] w-full overflow-hidden bg-ink"
+        className="relative h-[100svh] min-h-[520px] w-full overflow-hidden bg-ink"
         aria-roledescription="carousel"
         aria-label="메인 슬라이드"
       >
-        <HeroMediaBackground slide={current} />
+        <div ref={mediaWrapRef} className="absolute inset-0 will-change-transform">
+          <HeroMediaBackground slide={current} />
+        </div>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink from-10% via-ink/55 via-45% to-transparent" />
 
         <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col justify-end px-4 pb-20 pt-28 sm:px-6 sm:pb-24">

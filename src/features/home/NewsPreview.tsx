@@ -1,19 +1,33 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import type { NewsPost } from '../../types/content'
+import { PhotoPlaceholder } from '../../components/shared/PhotoPlaceholder'
+import { useAdminStore } from '../../store/admin-store'
 import { formatDate } from '../../lib/utils'
 
 interface Props {
   posts: NewsPost[]
 }
 
-/** 홈 소식 — 1 featured + 2 compact (동일 3카드 그리드 금지) */
+/** 홈 소식 — 1 featured + 최대 3 compact (동일 카드 그리드 금지) */
 export function NewsPreview({ posts }: Props) {
-  const list = posts.slice(0, 3)
+  const isAdminMode = useAdminStore((s) => s.isAdminMode)
+  const pushToast = useAdminStore((s) => s.pushToast)
+
+  const list = posts.slice(0, 4)
   const featured = list[0]
   const rest = list.slice(1)
 
+  const featuredThumb = featured?.thumbnail?.trim() ?? ''
+
+  // 대표 소식 썸네일이 없으면 기본 이미지로 채우지 않고 관리자에게 등록 안내 토스트를 띄운다.
+  useEffect(() => {
+    if (!isAdminMode || !featured || featuredThumb) return
+    pushToast({ title: '대표 소식 썸네일을 등록해 주세요!', variant: 'default' })
+  }, [isAdminMode, featured, featuredThumb, pushToast])
+
   return (
-    <section className="bg-paper py-20 sm:py-28">
+    <section className="bg-paper-dim pt-20 pb-20 sm:pt-24 sm:pb-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-12 flex items-end justify-between gap-4">
           <h2 className="font-serif text-2xl font-semibold tracking-tight text-paper-text sm:text-3xl">
@@ -32,23 +46,25 @@ export function NewsPreview({ posts }: Props) {
         ) : (
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-14">
             <Link to={`/news/${featured.id}`} className="group block min-w-0">
-              <div className="aspect-[16/10] overflow-hidden bg-paper-line">
-                {featured.thumbnail ? (
+              {featuredThumb ? (
+                <div className="aspect-[16/10] overflow-hidden bg-paper-line">
                   <img
-                    src={featured.thumbnail}
+                    src={featuredThumb}
                     alt=""
                     className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                     loading="lazy"
                   />
-                ) : null}
-              </div>
+                </div>
+              ) : isAdminMode ? (
+                <PhotoPlaceholder className="aspect-[16/10] w-full" />
+              ) : null}
               <p className="mt-5 text-xs text-paper-muted">{formatDate(featured.createdAt)}</p>
               <h3 className="mt-2 font-serif text-2xl font-semibold leading-snug tracking-tight text-paper-text transition-colors group-hover:text-gold-deep sm:text-[1.65rem]">
                 {featured.title}
               </h3>
             </Link>
 
-            <ul className="flex flex-col justify-center divide-y divide-paper-line border-y border-paper-line">
+            <ul className="flex flex-col divide-y divide-paper-line border-y border-paper-line lg:self-start">
               {rest.map((post) => (
                 <li key={post.id}>
                   <Link

@@ -198,9 +198,9 @@ export const SITE_NAME = '대한예수교장로회 남사보배로운교회'
 export const SITE_TITLE = '남사보배로운교회\\예장통합'
 
 export const PARTNER_LINKS = [
-  { label: '대한예수교장로회 총회', href: 'https://gapck.org' },
-  { label: '남경기노회', href: 'http://남경기노회.kr' },
-  { label: 'GMS 총회세계선교회', href: 'https://gms.kr' },
+  { label: '대한예수교장로회 총회', href: 'https://www.pck.or.kr/' },
+  { label: '용천노회', href: 'https://www.yc21.or.kr/' },
+  { label: '총회세계선교부', href: 'https://pck.or.kr/division.php?part=worldmission' },
 ] as const
 
 export type PopupPosition = 'top' | 'center' | 'center-left' | 'center-right'

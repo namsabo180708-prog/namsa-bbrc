@@ -110,22 +110,14 @@ export async function getHeroSlides(): Promise<HeroSlide[]> {
 
   const active = (remote ?? []).filter((s) => s.isActive).sort((a, b) => a.order - b.order)
 
-  // Firestore에 문서는 있으나 미디어 URL이 비어 있으면 시드 이미지로 폴백
+  // 슬라이드가 하나도 없을 때만 데모용 시드 슬라이드를 노출한다.
+  // (슬라이드는 있는데 배경 미디어만 비어 있으면 그대로 빈 값으로 넘겨,
+  //  HeroSlider가 빈 화면 + "이미지를 저장해 주세요" 안내를 처리한다.)
   if (active.length === 0) {
     return seedHeroSlides.filter((s) => s.isActive).sort((a, b) => a.order - b.order)
   }
 
-  const withMedia = active.map((s, i) => {
-    if (s.mediaUrl) return s
-    const fallback = seedHeroSlides[i % seedHeroSlides.length]!
-    return {
-      ...s,
-      mediaUrl: fallback.mediaUrl,
-      mediaType: fallback.mediaType,
-    }
-  })
-
-  return withMedia
+  return active
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {

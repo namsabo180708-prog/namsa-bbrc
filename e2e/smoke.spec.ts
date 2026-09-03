@@ -6,8 +6,8 @@ test.describe('public site smoke', () => {
     await expect(page.getByRole('banner')).toContainText('대한예수교장로회 남사보배로운교회')
     await expect(page.getByRole('navigation').getByRole('link', { name: '교회소개' })).toBeVisible()
     await expect(page.getByRole('navigation').getByRole('link', { name: '예배안내' })).toBeVisible()
-    await expect(page.getByRole('contentinfo')).toContainText('협력기관')
-    await expect(page.getByRole('contentinfo')).toContainText('남경기노회')
+    await expect(page.getByRole('heading', { name: '협력기관' })).toBeVisible()
+    await expect(page.getByRole('link', { name: '용천노회' })).toBeVisible()
   })
 
   test('news list and detail flow', async ({ page }) => {

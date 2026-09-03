@@ -7,7 +7,6 @@ import { FormField } from '../../components/ui/form-field'
 import { MediaInputField } from '../../components/shared/MediaInputField'
 import { saveDocument } from '../../lib/content-service'
 import { detectMediaType } from '../../lib/media'
-import { FALLBACK_IMAGE } from './HeroMediaBackground'
 
 export function HeroEditor({
   slide,
@@ -33,21 +32,16 @@ export function HeroEditor({
   }, [slide])
 
   const resolveMedia = () => {
-    const nextUrl = form.mediaUrl.trim()
-    if (nextUrl) {
-      return {
-        mediaUrl: nextUrl,
-        mediaType: detectMediaType(nextUrl),
-      }
-    }
-    const keep = slide.mediaUrl.trim() || FALLBACK_IMAGE
+    // 새 값이 있으면 사용, 없으면 기존 값 유지 — 둘 다 없으면 빈 값으로 저장한다
+    // (기본 이미지로 폴백하지 않음).
+    const keep = form.mediaUrl.trim() || slide.mediaUrl.trim()
     return {
       mediaUrl: keep,
-      mediaType: detectMediaType(keep),
+      mediaType: keep ? detectMediaType(keep) : 'image',
     }
   }
 
-  const save = async (_publish: boolean) => {
+  const save = async () => {
     setSaving(true)
     try {
       const media = resolveMedia()
@@ -116,10 +110,13 @@ export function HeroEditor({
       <MediaInputField
         label="배경 미디어 (이미지 / mp4 / 유튜브)"
         value={{ mediaUrl: form.mediaUrl, mediaType: form.mediaType }}
-        defaultUrl={slide.mediaUrl || FALLBACK_IMAGE}
+        defaultUrl={slide.mediaUrl}
         folder="hero"
-        required
-        hint="비우면 현재 미디어 유지 · 이미지/mp4 URL·파일 또는 유튜브 URL · 파일 최대 15MB"
+        hint={
+          slide.mediaUrl.trim()
+            ? '비우면 현재 미디어 유지 · 이미지/mp4 URL·파일 또는 유튜브 URL · 파일 최대 15MB'
+            : '슬라이드 이미지를 업로드해 주세요 · 이미지/mp4 URL·파일 또는 유튜브 URL · 파일 최대 15MB'
+        }
         onChange={(media) =>
           setForm((prev) => ({
             ...prev,
@@ -143,11 +140,8 @@ export function HeroEditor({
         />
       </FormField>
 
-      <div className="flex justify-end gap-2 pt-1">
-        <Button variant="secondary" disabled={saving} onClick={() => void save(false)}>
-          저장 후 미리보기
-        </Button>
-        <Button disabled={saving} onClick={() => void save(true)}>
+      <div className="flex justify-end pt-1">
+        <Button disabled={saving} onClick={() => void save()}>
           게시
         </Button>
       </div>

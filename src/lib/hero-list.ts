@@ -6,7 +6,8 @@ export function nextHeroSlideId(now = Date.now()): string {
 
 /**
  * 관리자 "슬라이드 추가"로 생성되는 빈 슬라이드 — 저장 후 배너의 편집(연필 아이콘)에서
- * 개별 수정한다. mediaUrl은 비워둬도 HeroMediaBackground가 시드 이미지로 폴백한다.
+ * 개별 수정한다. mediaUrl은 빈 값으로 시작하며, 설정 전까지 히어로는 빈 화면 +
+ * "슬라이드 이미지를 저장해 주세요" 안내 토스트를 노출한다(기본 이미지 폴백 없음).
  */
 export function createBlankHeroSlide(order: number, now = Date.now()): HeroSlide {
   return {

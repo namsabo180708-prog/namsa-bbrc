@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { PastorGreeting } from '../../types/content'
 import { EditableBlock } from '../../components/shared/EditableBlock'
+import { PhotoPlaceholder } from '../../components/shared/PhotoPlaceholder'
 import { FormField } from '../../components/ui/form-field'
 import { MediaInputField } from '../../components/shared/MediaInputField'
 import { Input } from '../../components/ui/input'
@@ -12,17 +13,24 @@ import { useAdminStore } from '../../store/admin-store'
 interface Props {
   greeting: PastorGreeting
   onUpdated?: () => void
-  /** 홈 스플릿 레이아웃 (기본 true) */
-  compact?: boolean
 }
 
-export function PastorGreetingSection({ greeting, onUpdated, compact = true }: Props) {
+export function PastorGreetingSection({ greeting, onUpdated }: Props) {
   const pushToast = useAdminStore((s) => s.pushToast)
+  const isAdminMode = useAdminStore((s) => s.isAdminMode)
+
+  const photo = greeting.photoUrl?.trim() ?? ''
 
   const quote =
     greeting.quote?.trim() ||
     extractFirstSentence(greeting.message) ||
     greeting.message.slice(0, 80)
+
+  // 사진이 설정되지 않았으면 기본 이미지로 폴백하지 않고, 관리자에게 저장 안내 토스트를 띄운다.
+  useEffect(() => {
+    if (!isAdminMode || photo) return
+    pushToast({ title: '인사말 사진을 저장해 주세요!', variant: 'default' })
+  }, [isAdminMode, photo, pushToast])
 
   return (
     <EditableBlock
@@ -40,38 +48,39 @@ export function PastorGreetingSection({ greeting, onUpdated, compact = true }: P
         />
       )}
     >
-      <article
-        className={
-          compact
-            ? 'grid items-start gap-10 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:gap-14 lg:gap-16'
-            : 'grid items-center gap-10 md:grid-cols-[240px_1fr]'
-        }
-      >
-        <div className="mx-auto w-full max-w-sm overflow-hidden md:mx-0 md:max-w-none">
-          <img
-            src={greeting.photoUrl}
-            alt={greeting.pastorName}
-            className="aspect-[3/4] w-full object-cover"
-            loading="lazy"
-          />
+      {/* 왼쪽: 사진 + 성함 / 오른쪽: 인사말 내용 */}
+      <article className="grid gap-8 sm:grid-cols-[minmax(0,240px)_1fr] sm:gap-10">
+        <div className="flex flex-col">
+          <div className="map-ripple relative overflow-hidden rounded-[20px] shadow-[0_16px_40px_-12px_rgba(31,26,22,0.35)]">
+            {photo ? (
+              <img
+                src={photo}
+                alt={greeting.pastorName}
+                className="aspect-[3/4] w-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <PhotoPlaceholder className="aspect-[3/4] w-full" />
+            )}
+            <span className="map-ripple__wave" aria-hidden />
+          </div>
+          <div className="mt-4 text-center sm:text-left">
+            <h2 className="font-serif text-xl font-semibold text-paper-text sm:text-2xl">
+              {greeting.pastorName}
+            </h2>
+            <p className="mt-1 text-sm text-paper-muted">담임목사</p>
+          </div>
         </div>
 
-        <div className="min-w-0 flex flex-col justify-center">
+        <div className="flex min-w-0 flex-col justify-center">
           <blockquote className="border-l-2 border-gold pl-5 sm:pl-6">
             <p className="font-serif text-2xl font-medium leading-snug tracking-tight text-paper-text sm:text-[1.75rem]">
               {quote}
             </p>
           </blockquote>
-
-          <div className="mt-8 sm:mt-10">
-            <h2 className="font-serif text-xl font-semibold text-paper-text sm:text-2xl">
-              {greeting.pastorName}
-            </h2>
-            <p className="mt-1 text-sm text-paper-muted">담임목사</p>
-            <p className="mt-5 max-w-prose text-base leading-relaxed text-paper-muted sm:text-[1.05rem] sm:leading-7">
-              {greeting.message}
-            </p>
-          </div>
+          <p className="mt-6 max-w-prose text-base leading-relaxed text-paper-muted sm:mt-8 sm:text-[1.05rem] sm:leading-7">
+            {greeting.message}
+          </p>
         </div>
       </article>
     </EditableBlock>
@@ -97,7 +106,8 @@ function GreetingEditor({
   const save = async () => {
     setSaving(true)
     try {
-      const photoUrl = form.photoUrl.trim() || greeting.photoUrl
+      // 새 값이 없으면 기존 값 유지 — 둘 다 없으면 빈 값으로 저장(기본 이미지 폴백 없음).
+      const photoUrl = form.photoUrl.trim() || greeting.photoUrl.trim()
       await saveDocument('pastorGreeting', 'main', {
         pastorName: form.pastorName.trim() || greeting.pastorName,
         photoUrl,
@@ -106,6 +116,22 @@ function GreetingEditor({
         updatedAt: new Date().toISOString(),
       })
       setForm((p) => ({ ...p, photoUrl }))
+      onSaved()
+    } catch (err) {
+      onError(err instanceof Error ? err.message : '저장 실패')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const clearPhoto = async () => {
+    setSaving(true)
+    try {
+      await saveDocument('pastorGreeting', 'main', {
+        photoUrl: '',
+        updatedAt: new Date().toISOString(),
+      })
+      setForm((p) => ({ ...p, photoUrl: '' }))
       onSaved()
     } catch (err) {
       onError(err instanceof Error ? err.message : '저장 실패')
@@ -125,17 +151,32 @@ function GreetingEditor({
         />
       </FormField>
 
-      <MediaInputField
-        label="사진"
-        imageOnly
-        folder="pastor"
-        required
-        value={{ mediaUrl: form.photoUrl, mediaType: 'image' }}
-        defaultUrl={greeting.photoUrl}
-        hint="세로 비율(3:4) 권장 · 비우면 현재 사진 유지"
-        onChange={(m) => setForm({ ...form, photoUrl: m.mediaUrl })}
-        onError={onError}
-      />
+      <div>
+        <MediaInputField
+          label="사진"
+          imageOnly
+          folder="pastor"
+          value={{ mediaUrl: form.photoUrl, mediaType: 'image' }}
+          defaultUrl={greeting.photoUrl}
+          hint={
+            greeting.photoUrl.trim()
+              ? '세로 비율(3:4) 권장 · 비우면 현재 사진 유지'
+              : '세로 비율(3:4) 권장 · 사진파일을 업로드해 주세요'
+          }
+          onChange={(m) => setForm({ ...form, photoUrl: m.mediaUrl })}
+          onError={onError}
+        />
+        {greeting.photoUrl.trim() ? (
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void clearPhoto()}
+            className="mt-1.5 text-xs font-medium text-wine-deep underline-offset-2 transition hover:underline disabled:opacity-50"
+          >
+            현재 사진 제거 (안내 문구로 표시)
+          </button>
+        ) : null}
+      </div>
 
       <FormField
         label="인용구 (Pull-quote)"

@@ -71,7 +71,7 @@ export const seedHeroSlides: HeroSlide[] = [
 
 export const seedPastorGreeting: PastorGreeting = {
   id: 'main',
-  photoUrl: '/photos/pastor-ryu.webp',
+  photoUrl: '',
   pastorName: '유병구 목사',
   quote: '지친 마음은 주님께 내려놓고, 서로를 향해 따뜻한 위로와 격려를 건네는 믿음의 공동체가 되기를 소망합니다.',
   message:

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Reveal } from '../../components/shared/Reveal'
 import { indexItems } from './quick-links-data'
 
 /**
@@ -7,8 +8,10 @@ import { indexItems } from './quick-links-data'
  */
 export function QuickIndex() {
   return (
-    <section className="bg-paper-dim py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+    <section className="relative bg-paper bg-[url(/logo-image/webp/cup-image.webp)] bg-cover bg-center bg-no-repeat bg-scroll py-20 sm:py-28 md:bg-fixed">
+      {/* 고정 배경 이미지 위 텍스트 가독성용 페이퍼 톤 오버레이 */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-paper/60" />
+      <Reveal className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <h2 className="font-serif text-2xl font-semibold tracking-tight text-paper-text sm:text-3xl">
           찾아가기
         </h2>
@@ -33,7 +36,7 @@ export function QuickIndex() {
             </li>
           ))}
         </ul>
-      </div>
+      </Reveal>
     </section>
   )
 }

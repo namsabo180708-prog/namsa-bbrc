@@ -9,23 +9,22 @@ interface Props {
 }
 
 /**
- * Stone & Leaf 홈 밴드:
- * 1) 인사 — 비대칭 스플릿
- * 2) 표어 — 별도 타이포 스트립 (같은 레이아웃 가족 반복 금지)
+ * Stone & Leaf 홈 밴드 — 담임목사 인사말(좌, 7) · 연간 표어(우, 3)를 1×2 그리드로 배치.
+ * 모바일에서는 인사말 → 표어 순으로 세로 스택.
  */
 export function GreetingMottoBand({ greeting, motto, onUpdated }: Props) {
   return (
-    <>
-      <section className="bg-paper py-20 sm:py-28">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <PastorGreetingSection greeting={greeting} onUpdated={onUpdated} compact />
+    <section className="bg-paper pt-20 sm:pt-24">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="grid gap-8 md:grid-cols-[7fr_3fr] md:items-stretch lg:gap-12">
+          <div className="rounded-[20px] border border-paper-line bg-paper p-7 sm:p-9">
+            <PastorGreetingSection greeting={greeting} onUpdated={onUpdated} />
+          </div>
+          <div className="rounded-[20px] border border-paper-line bg-paper-dim p-7 sm:p-9">
+            <AnnualMottoSection motto={motto} onUpdated={onUpdated} />
+          </div>
         </div>
-      </section>
-      <section className="border-y border-paper-line bg-paper-dim py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <AnnualMottoSection motto={motto} onUpdated={onUpdated} />
-        </div>
-      </section>
-    </>
+      </div>
+    </section>
   )
 }

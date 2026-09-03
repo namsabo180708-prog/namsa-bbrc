@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Seo } from '../components/shared/Seo'
+import { Reveal } from '../components/shared/Reveal'
 import { HeroSlider } from '../features/hero/HeroSlider'
 import { HeroManagePanel } from '../features/hero/HeroManagePanel'
 import { GreetingMottoBand } from '../features/home/GreetingMottoBand'
@@ -27,7 +28,7 @@ let cachedHeroSlides: HeroSlide[] | null = null
 function HeroSkeleton() {
   return (
     <div
-      className="relative h-[min(92vh,900px)] min-h-[560px] w-full animate-pulse overflow-hidden bg-ink"
+      className="relative h-[100svh] min-h-[520px] w-full animate-pulse overflow-hidden bg-ink"
       style={{ marginTop: 'calc(var(--header-h, 0px) * -1)' }}
     />
   )
@@ -45,7 +46,7 @@ export function HomePage() {
       getHeroSlides(),
       getPastorGreeting(),
       getAnnualMotto(),
-      getNewsPosts({ publishedOnly: true, pageSize: 3 }),
+      getNewsPosts({ publishedOnly: true, pageSize: 4 }),
     ])
     cachedHeroSlides = s
     setSlides(s)
@@ -65,12 +66,16 @@ export function HomePage() {
       {isAdminMode && slides ? (
         <HeroManagePanel slides={slides} onUpdated={() => void reload()} />
       ) : null}
-      <GreetingMottoBand
-        greeting={greeting}
-        motto={motto}
-        onUpdated={() => void reload()}
-      />
-      <NewsPreview posts={news} />
+      <Reveal>
+        <GreetingMottoBand
+          greeting={greeting}
+          motto={motto}
+          onUpdated={() => void reload()}
+        />
+      </Reveal>
+      <Reveal>
+        <NewsPreview posts={news} />
+      </Reveal>
       <QuickLinks />
     </>
   )
