@@ -47,16 +47,17 @@ export function NewsPreview({ posts }: Props) {
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-14">
             <Link to={`/news/${featured.id}`} className="group block min-w-0">
               {featuredThumb ? (
-                <div className="aspect-[16/10] overflow-hidden bg-paper-line">
+                <div className="map-ripple relative aspect-[16/10] overflow-hidden rounded-[20px] bg-paper-line shadow-[0_18px_40px_-14px_rgba(90,102,96,0.45)]">
                   <img
                     src={featuredThumb}
                     alt=""
                     className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                     loading="lazy"
                   />
+                  <span className="map-ripple__wave" aria-hidden />
                 </div>
               ) : isAdminMode ? (
-                <PhotoPlaceholder className="aspect-[16/10] w-full" />
+                <PhotoPlaceholder className="aspect-[16/10] w-full rounded-[20px]" />
               ) : null}
               <p className="mt-5 text-xs text-paper-muted">{formatDate(featured.createdAt)}</p>
               <h3 className="mt-2 font-serif text-2xl font-semibold leading-snug tracking-tight text-paper-text transition-colors group-hover:text-gold-deep sm:text-[1.65rem]">
